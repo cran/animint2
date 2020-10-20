@@ -1,6 +1,6 @@
 Package: animint2
 Title: Animated Interactive Grammar of Graphics
-Version: 2019.7.3
+Version: 2020.9.18
 URL: https://github.com/tdhock/animint2
 BugReports: https://github.com/tdhock/animint2/issues
 Authors@R: c(
@@ -35,7 +35,7 @@ Authors@R: c(
     person("Kevin", "Ferris",
      role="aut",
      comment="Animint GSOC 2015"),
-    person("Tony", "Tsai",
+    person("Jun", "Cai",
      role="aut",
      comment="Animint GSOC 2015"),
     person("Faizan", "Khan",
@@ -43,7 +43,10 @@ Authors@R: c(
      comment="Animint GSOC 2016-2017"),
     person("Vivek", "Kumar",
      role="aut",
-     comment="Animint GSOC 2018"))
+     comment="Animint GSOC 2018"),
+    person("Himanshu", "Singh",
+     role="aut",
+     comment="Animint2 GSoC 2020"))
 Description: Functions are provided for defining animated,
  interactive data visualizations in R code, and rendering
  on a web page. The 2018 Journal of Computational and 
@@ -52,11 +55,11 @@ Description: Functions are provided for defining animated,
  describes the concepts implemented.
 Depends: R (>= 3.4.0)
 Imports: digest, RJSONIO, grid, gtable (>= 0.1.1), MASS, plyr (>=
-        1.7.1), reshape2, scales (>= 0.4.1), stats, tibble, lazyeval
-Suggests: knitr (>= 1.5.33), servr, gistr (>= 0.2), shiny, htmltools,
-        rmarkdown, testthat, devtools, httr, maps, ggplot2movies,
-        hexbin, Hmisc, lattice, mapproj, maptools, mgcv, nlme,
-        quantreg, rpart, svglite
+        1.7.1), reshape2, scales (>= 0.4.1), stats, tibble, lazyeval,
+        knitr (>= 1.5.33)
+Suggests: servr, gistr (>= 0.2), shiny, htmltools, rmarkdown, testthat,
+        devtools, httr, maps, ggplot2movies, hexbin, Hmisc, lattice,
+        mapproj, maptools, mgcv, nlme, quantreg, rpart, svglite
 Enhances: sp
 License: GPL-3
 Encoding: UTF-8
@@ -114,9 +117,9 @@ Collate: 'gganimintproto.r' 'aaa-.r' 'aes-calculated.r'
         'z_animintHelpers.R' 'z_facets.R' 'z_geoms.R' 'z_gist.R'
         'z_helperFunctions.R' 'z_knitr.R' 'z_print.R' 'z_scales.R'
         'z_theme_animint.R' 'z_transformShape.R'
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.1
 NeedsCompilation: no
-Packaged: 2019-07-14 08:11:24 UTC; tdhock
+Packaged: 2020-10-19 22:51:31 UTC; tdhock
 Author: Toby Hocking [aut, cre] (Original animint code),
   Hadley Wickham [aut] (Forked ggplot2 code),
   Winston Chang [aut] (Forked ggplot2 code),
@@ -127,9 +130,10 @@ Author: Toby Hocking [aut, cre] (Original animint code),
   Susan VanderPlas [aut] (Animint GSOC 2013),
   Carson Sievert [aut] (Animint GSOC 2014),
   Kevin Ferris [aut] (Animint GSOC 2015),
-  Tony Tsai [aut] (Animint GSOC 2015),
+  Jun Cai [aut] (Animint GSOC 2015),
   Faizan Khan [aut] (Animint GSOC 2016-2017),
-  Vivek Kumar [aut] (Animint GSOC 2018)
+  Vivek Kumar [aut] (Animint GSOC 2018),
+  Himanshu Singh [aut] (Animint2 GSoC 2020)
 Maintainer: Toby Hocking <toby.hocking@r-project.org>
 Repository: CRAN
-Date/Publication: 2019-07-18 06:36:12 UTC
+Date/Publication: 2020-10-20 20:00:19 UTC
