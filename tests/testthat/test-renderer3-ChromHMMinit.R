@@ -81,5 +81,11 @@ test_that("animation starts by default", {
   updated.fill.vec <- getFill()
   expect_equal(length(updated.fill.vec), 225)
   n.different <- sum(initial.fill.vec != updated.fill.vec)
-  expect_more_than(n.different, 0)
+  expect_gt(n.different, 0)
+})
+
+test_that("default tile colour/stroke is transparent", {
+  stroke.vec <- getStyleValue(
+    info$html, '//g[@class="geom1_tile_parameters"]//rect', "stroke")
+  expect_identical(stroke.vec, rep("transparent", 90))
 })

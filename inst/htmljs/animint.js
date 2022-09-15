@@ -6,6 +6,8 @@
 // Constructor for animint Object.
 var animint = function (to_select, json_file) {
 
+  var default_axis_px = 16;
+
    function wait_until_then(timeout, condFun, readyFun) {
     var args=arguments
     function checkFun() {
@@ -181,13 +183,26 @@ var animint = function (to_select, json_file) {
     // Determine what style to use to show the selection for this
     // geom. This is a hack and should be removed when we implement
     // the selected.color, selected.size, etc aesthetics.
-    if(g_info.aes.hasOwnProperty("fill") &&
-       g_info.geom == "rect" &&
-       g_info.aes.hasOwnProperty("clickSelects")){
-      g_info.select_style = "stroke";
-    }else{
-      g_info.select_style = "opacity";
+    //
+    // 2022.08.01 update: get rid of the hack of "rect stroke" to 
+    // implement a general function for alpha_off, color_off. 
+    // In order to have multiple styles functioning together
+    // so here use array to store the styles.   
+    // Default using alpha/opacity style, execpt rect/tile geom
+    // rect/tile geom default using stroke style
+    let select_styles = [];
+    let has_colour_off = g_info.params.hasOwnProperty("colour_off") || g_info.aes.hasOwnProperty("colour_off");
+    let has_alpha_off = g_info.params.hasOwnProperty("alpha_off") || g_info.aes.hasOwnProperty("alpha_off");
+    if(has_colour_off || g_info.geom == "rect"){
+      select_styles.push("stroke");
+    } 
+    if (has_alpha_off){
+      select_styles.push("opacity");
+    } 
+    if (!has_colour_off && !has_alpha_off && !select_styles.length){
+      select_styles = ["opacity"];
     }
+    g_info.select_style = select_styles;
     // Determine if data will be an object or an array.
     if(g_info.geom in data_object_geoms){
       g_info.data_is_object = true;
@@ -247,8 +262,8 @@ var animint = function (to_select, json_file) {
     var npanels = Math.max.apply(null, panel_names);
 
     // Note axis names are "shared" across panels (just like the title)
-    var xtitlepadding = 5 + measureText(p_info["xtitle"], 11).height;
-    var ytitlepadding = 5 + measureText(p_info["ytitle"], 11).height;
+    var xtitlepadding = 5 + measureText(p_info["xtitle"], default_axis_px).height;
+    var ytitlepadding = 5 + measureText(p_info["ytitle"], default_axis_px).height;
 
     // 'margins' are fixed across panels and do not
     // include title/axis/label padding (since these are not
@@ -308,14 +323,14 @@ var animint = function (to_select, json_file) {
       axispaddingy += Math.max.apply(null, p_info.ylabs.map(function(entry){
 	// + 5 to give a little extra space to avoid bad axis labels
 	// in shiny.
-	return measureText(entry, 11).width + 5;
+	return measureText(entry, p_info.ysize).width + 5;
       }));
     }
     var axispaddingx = 10 + 20;
     if(p_info.hasOwnProperty("xlabs") && p_info.xlabs.length){
       // TODO: throw warning if text height is large portion of plot height?
       axispaddingx += Math.max.apply(null, p_info.xlabs.map(function(entry){
-	     return measureText(entry, 11, p_info.xangle).height;
+	     return measureText(entry, p_info.xsize, p_info.xangle).height;
       }));
       // TODO: carefully calculating this gets complicated with rotating xlabs
       //margin.right += 5;
@@ -601,6 +616,7 @@ var animint = function (to_select, json_file) {
 	}
 	xaxis_g.selectAll("text")
 	  .style("text-anchor", p_info.xanchor)
+	  .style("font-size", p_info.xsize)
 	  .attr("transform", "rotate(" + p_info.xangle + " 0 9)");
       }
       if(draw_y){
@@ -620,6 +636,8 @@ var animint = function (to_select, json_file) {
 	  var axis_path = yaxis_g.select("path.domain");
 	  axis_path.remove();
 	}
+  yaxis_g.selectAll(".tick text")
+    .style("font-size", p_info.ysize);
       }
 
       if(!axis.xline) {
@@ -718,7 +736,7 @@ var animint = function (to_select, json_file) {
 	.text(p_info["ytitle"])
 	.attr("class", "ytitle")
 	.style("text-anchor", "middle")
-	.style("font-size", "11px")
+	.style("font-size", default_axis_px + "px")
 	.attr("transform", "translate(" + 
 	      ytitle_x +
 	      "," +
@@ -731,7 +749,7 @@ var animint = function (to_select, json_file) {
 	.text(p_info["xtitle"])
 	.attr("class", "xtitle")
 	.style("text-anchor", "middle")
-	.style("font-size", "11px")
+	.style("font-size", default_axis_px + "px")
 	.attr("transform", "translate(" + 
 	      (xtitle_left + xtitle_right)/2 +
 	      "," + 
@@ -946,6 +964,9 @@ var animint = function (to_select, json_file) {
     var p_name = g_names[g_names.length - 1];
     var scales = Plots[p_name].scales[PANEL];
     var selected_arrays = [ [] ]; //double array necessary.
+    var has_clickSelects = g_info.aes.hasOwnProperty("clickSelects");
+    var has_clickSelects_variable =
+      g_info.aes.hasOwnProperty("clickSelects.variable");
     g_info.subset_order.forEach(function (aes_name) {
       var selected, values;
       var new_arrays = [];
@@ -1031,9 +1052,18 @@ var animint = function (to_select, json_file) {
     var panel_g_element = layer_g_element.select("g.PANEL" + PANEL);
     var elements = panel_g_element.selectAll(".geom");
     // TODO: standardize this code across aes/styles.
-    var base_opacity = 1;
-    if (g_info.params.alpha) {
+    let base_opacity;
+    let off_opacity;
+    // Explicitly check if it has the property, allows 0 as valid value
+    if (g_info.params.hasOwnProperty("alpha")) {
       base_opacity = g_info.params.alpha;
+    } else {
+      base_opacity = 1;
+    }
+    if (g_info.params.hasOwnProperty("alpha_off")) {
+      off_opacity = g_info.params.alpha_off;
+    } else {
+      off_opacity = base_opacity - 0.5;
     }
     //alert(g_info.classed+" "+base_opacity);
     var get_alpha = function (d) {
@@ -1042,6 +1072,19 @@ var animint = function (to_select, json_file) {
         a = d["alpha"];
       } else {
         a = base_opacity;
+      }
+      return a;
+    };
+    const get_alpha_off = function (d) {
+      let a;
+      if (aes.hasOwnProperty("alpha_off") && d.hasOwnProperty("alpha_off")) {
+        a = d["alpha_off"];
+      } else if (g_info.params.hasOwnProperty("alpha_off")) {
+        a = g_info.params.alpha_off;
+      } else if (aes.hasOwnProperty("alpha") && d.hasOwnProperty("alpha")) {
+        a = d["alpha"] - 0.5;
+      } else {
+        a = off_opacity;
       }
       return a;
     };
@@ -1085,21 +1128,53 @@ var animint = function (to_select, json_file) {
     };
     var colour = "black";
     var fill = "black";
+    let angle = 0;
+    if (g_info.params.hasOwnProperty("angle")) {
+      angle = g_info.params["angle"];
+    }
+    const get_angle = function(d) {
+      // x and y are the coordinates to rotate around, we choose the center 
+      // point of the text because otherwise it will rotate around (0,0) of its 
+      // coordinate system, which is the top left of the plot
+      x = scales["x"](d["x"]);
+      y = scales["y"](d["y"]);
+      if (d.hasOwnProperty("angle")) {
+        angle = d["angle"];
+      }
+      // ggplot expects angles to be in degrees CCW, SVG uses degrees CW, so 
+      // we negate the angle.
+      return `rotate(${-angle}, ${x}, ${y})`;
+    };
     var get_colour = function (d) {
       if (d.hasOwnProperty("colour")) {
         return d["colour"]
       }
       return colour;
     };
+    if (g_info.geom == "rect" && has_clickSelects && g_info.params.colour == "transparent"){
+      colour = "black";
+    } else if(g_info.params.colour){
+      colour = g_info.params.colour;
+    }
+    
+    // Only "colour_off" params appears would call this function,
+    // so no default off_colour value
+    const get_colour_off = function (d) {
+      let off_colour;
+      if (aes.hasOwnProperty("colour_off") && d.hasOwnProperty("colour_off")) {
+        off_colour = d["colour_off"];
+      } else if(g_info.params.hasOwnProperty("colour_off")){
+        off_colour = g_info.params.colour_off;
+      }
+      return off_colour;
+    };
+
     var get_fill = function (d) {
       if (d.hasOwnProperty("fill")) {
         return d["fill"];
       }
       return fill;
     };
-    if (g_info.params.colour) {
-      colour = g_info.params.colour;
-    }
     if (g_info.params.fill) {
       fill = g_info.params.fill;
     }else if(g_info.params.colour){
@@ -1132,6 +1207,16 @@ var animint = function (to_select, json_file) {
         return d.key;
       };
     }
+    
+    // Apply user-configurable selection style into each geom later.
+    var select_style_fun = function(g_info, e){
+      if(!g_info.select_style.includes("stroke")){
+        e.style("stroke", get_colour);
+      }
+      if(!g_info.select_style.includes("opacity")){
+        e.style("opacity", get_alpha);
+      }
+    };
     if(g_info.data_is_object) {
 
       // Lines, paths, polygons, and ribbons are a bit special. For
@@ -1279,6 +1364,18 @@ var animint = function (to_select, json_file) {
             var one_group = keyed_data[group_info.value];
             var one_row = one_group[0];
   	        // take color for first value in the group
+            // Since line/path geom are using group to draw, 
+            // so it is different from other geom 
+            // and cannot call select_style_fun function here
+            if ((has_clickSelects || has_clickSelects_variable) && g_info.select_style.includes("stroke")){
+              const v_name = g_info.aes['clickSelects.variable'] || g_info.aes['clickSelects'];
+              const s_info = Selectors[v_name];
+              if(s_info.selected == one_row.clickSelects){
+                return get_colour(one_row);
+              } else{
+                return get_colour_off(one_row);
+              };
+            };
             return get_colour(one_row);
           })
           .style("stroke-dasharray", function (group_info) {
@@ -1293,6 +1390,14 @@ var animint = function (to_select, json_file) {
   	        // take line size for first value in the group
             return get_size(one_row);
           });
+        if(!g_info.select_style.includes("opacity")){
+          e.style("opacity", function (group_info) {
+            var one_group = keyed_data[group_info.value];
+            var one_row = one_group[0];
+            // take line size for first value in the group
+            return get_alpha(one_row);
+          })
+        }
       };
       eAppend = "path";
     }else{
@@ -1318,8 +1423,8 @@ var animint = function (to_select, json_file) {
             return scales.y(d["yend"]);
           })
           .style("stroke-dasharray", get_dasharray)
-          .style("stroke-width", get_size)
-          .style("stroke", get_colour);
+          .style("stroke-width", get_size);
+          select_style_fun(g_info, e);
       };
       eAppend = "line";
     }
@@ -1339,8 +1444,8 @@ var animint = function (to_select, json_file) {
             return scales.y(d["ymin"]);
           })
           .style("stroke-dasharray", get_dasharray)
-          .style("stroke-width", get_size)
-          .style("stroke", get_colour);
+          .style("stroke-width", get_size);
+          select_style_fun(g_info, e);
       };
       eAppend = "line";
     }
@@ -1352,8 +1457,8 @@ var animint = function (to_select, json_file) {
           .attr("y1", scales.y.range()[0])
           .attr("y2", scales.y.range()[1])
           .style("stroke-dasharray", get_dasharray)
-          .style("stroke-width", get_size)
-          .style("stroke", get_colour);
+          .style("stroke-width", get_size);
+          select_style_fun(g_info, e);
       };
       eAppend = "line";
     }
@@ -1366,8 +1471,8 @@ var animint = function (to_select, json_file) {
           .attr("x1", scales.x.range()[0])
           .attr("x2", scales.x.range()[1])
           .style("stroke-dasharray", get_dasharray)
-          .style("stroke-width", get_size)
-          .style("stroke", get_colour);
+          .style("stroke-width", get_size);
+          select_style_fun(g_info, e);
       };
       eAppend = "line";
     }
@@ -1382,6 +1487,7 @@ var animint = function (to_select, json_file) {
           .style("fill", get_colour)
           .attr("font-size", get_size)
           .style("text-anchor", get_text_anchor)
+          .attr("transform", get_angle)
           .text(function (d) {
             return d.label;
           });
@@ -1392,11 +1498,11 @@ var animint = function (to_select, json_file) {
       elements = elements.data(data, key_fun);
       eActions = function (e) {
         e.attr("cx", toXY("x", "x"))
-          .attr("cy", toXY("y", "y"))
-          .attr("r", get_size)
-          .style("fill", get_fill)
-          .style("stroke", get_colour)
-          .style("stroke-width", get_stroke_width);
+        .attr("cy", toXY("y", "y"))
+        .attr("r", get_size)
+        .style("fill", get_fill)
+        .style("stroke-width", get_stroke_width);
+      select_style_fun(g_info, e);
       };
       eAppend = "circle";
     }
@@ -1411,8 +1517,8 @@ var animint = function (to_select, json_file) {
           .attr("height", scales.y.range()[0] - scales.y.range()[1])
           .style("fill", get_fill)
           .style("stroke-dasharray", get_dasharray)
-          .style("stroke-width", get_size)
-          .style("stroke", get_colour);
+          .style("stroke-width", get_size);
+          select_style_fun(g_info, e);
       };
       eAppend = "rect";
     }
@@ -1427,11 +1533,17 @@ var animint = function (to_select, json_file) {
           .attr("width", scales.x.range()[1] - scales.x.range()[0])
           .style("fill", get_fill)
           .style("stroke-dasharray", get_dasharray)
-          .style("stroke-width", get_size)
-          .style("stroke", get_colour);
+          .style("stroke-width", get_size);
+          select_style_fun(g_info, e);
       };
       eAppend = "rect";
     }
+    // geom_rect/geom_tile selection style logic:
+    // 1. in geom-tile.R we specify if the colour parameter, not aes, is null
+    //  - it shall be transparent when there is no clickSelects
+    //  - it is black when clickSelects is specified, and no params colour
+    // 2. When colour param is not null, whether it has clickSelects or not
+    //    the colour/stroke is the RGB value of colour params
     if (g_info.geom == "rect") {
       elements = elements.data(data, key_fun);
       eActions = function (e) {
@@ -1446,9 +1558,7 @@ var animint = function (to_select, json_file) {
           .style("stroke-dasharray", get_dasharray)
           .style("stroke-width", get_size)
           .style("fill", get_fill);
-	      if(g_info.select_style != "stroke"){
-          e.style("stroke", get_colour);
-        }
+          select_style_fun(g_info, e);
       };
       eAppend = "rect";
     }
@@ -1480,8 +1590,8 @@ var animint = function (to_select, json_file) {
             return scales.y(d["lower"]);
           })
           .style("stroke-dasharray", get_dasharray)
-          .style("stroke-width", get_size)
-          .style("stroke", get_colour);
+          .style("stroke-width", get_size);
+          select_style_fun(g_info, e);
         e.append("line")
           .attr("x1", function (d) {
             return scales.x(d["x"]);
@@ -1496,8 +1606,8 @@ var animint = function (to_select, json_file) {
             return scales.y(d["ymax"]);
           })
           .style("stroke-dasharray", get_dasharray)
-          .style("stroke-width", get_size)
-          .style("stroke", get_colour);
+          .style("stroke-width", get_size);
+          select_style_fun(g_info, e);
         e.append("rect")
           .attr("x", function (d) {
             return scales.x(d["xmin"]);
@@ -1513,8 +1623,8 @@ var animint = function (to_select, json_file) {
           })
           .style("stroke-dasharray", get_dasharray)
           .style("stroke-width", get_size)
-          .style("stroke", get_colour)
           .style("fill", get_fill);
+          select_style_fun(g_info, e);
         e.append("line")
           .attr("x1", function (d) {
             return scales.x(d["xmin"]);
@@ -1529,8 +1639,8 @@ var animint = function (to_select, json_file) {
             return scales.y(d["middle"]);
           })
           .style("stroke-dasharray", get_dasharray)
-          .style("stroke-width", get_size)
-          .style("stroke", get_colour);
+          .style("stroke-width", get_size);
+          select_style_fun(g_info, e);
       };
     }
     elements.exit().remove();
@@ -1542,45 +1652,34 @@ var animint = function (to_select, json_file) {
       enter = enter.append(eAppend)
 	      .attr("class", "geom");
     }
-    var has_clickSelects = g_info.aes.hasOwnProperty("clickSelects");
-    var has_clickSelects_variable =
-      g_info.aes.hasOwnProperty("clickSelects.variable");
     if (has_clickSelects || has_clickSelects_variable) {
-      var selected_funs = {
-	"opacity":{
-	  "mouseout":function (d) {
-	    var alpha_on = get_alpha(d);
-	    var alpha_off = get_alpha(d) - 0.5;
-	    if(has_clickSelects){
-              return ifSelectedElse(d.clickSelects, g_info.aes.clickSelects,
-				    alpha_on, alpha_off);
-	    }else if(has_clickSelects_variable){
-	      return ifSelectedElse(d["clickSelects.value"],
-				    d["clickSelects.variable"],
-				    alpha_on, alpha_off);
-	    }
-	  },
-	  "mouseover":function (d) {
-            return get_alpha(d);
-	  }
-	},
-	"stroke":{
-	  "mouseout":function(d){
-	    var stroke_on = "black";
-	    var stroke_off = "transparent";
-	    if(has_clickSelects){
-	      return ifSelectedElse(d.clickSelects, g_info.aes.clickSelects,
-				    stroke_on, stroke_off);
-	    }else{
-	      return ifSelectedElse(d["clickSelects.value"],
-				    d["clickSelects.variable"],
-				    stroke_on, stroke_off);
-	    }
-	  },
-	  "mouseover":function(d){
-	    return "black";
-	  }
-	}
+      var selected_funs = function(style_name, select_fun){
+        style_on_funs = {
+          "opacity": get_alpha,
+          "stroke": get_colour
+        };
+        style_off_funs = {
+          "opacity": get_alpha_off,
+          "stroke": get_colour_off
+        };
+        if(select_fun == "mouseout"){
+          return function (d) {
+            var select_on = style_on_funs[style_name](d);
+            var select_off = style_off_funs[style_name](d);
+            if(has_clickSelects){
+                    return ifSelectedElse(d.clickSelects, g_info.aes.clickSelects,
+                      select_on, select_off);
+            }else if(has_clickSelects_variable){
+              return ifSelectedElse(d["clickSelects.value"],
+                  d["clickSelects.variable"],
+                  select_on, select_off);
+            }
+          }
+        } else if(select_fun == "mouseover"){
+          return function (d) {
+            return style_on_funs[style_name](d);
+          }
+        };
       }; //selected_funs.
       // My original design for clicking/interactivity/transparency:
       // Basically I wanted a really simple way to show which element
@@ -1616,12 +1715,15 @@ var animint = function (to_select, json_file) {
 
       // TODO: user-configurable selection styles.
 
-      var style_funs = selected_funs[g_info.select_style];
       var over_fun = function(e){
-        e.style(g_info.select_style, style_funs["mouseover"]);
+        g_info.select_style.forEach(function(s){
+          e.style(s, selected_funs(s, "mouseover"));
+        })
       };
       var out_fun = function(e){
-        e.style(g_info.select_style, style_funs["mouseout"]);
+        g_info.select_style.forEach(function(s){
+          e.style(s, selected_funs(s, "mouseout"));
+        })
       };
       elements.call(out_fun)
         .on("mouseover", function (d) {
@@ -1647,7 +1749,10 @@ var animint = function (to_select, json_file) {
 	});
       }
     }else{//has neither clickSelects nor clickSelects.variable.
-      elements.style("opacity", get_alpha);
+      elements.style("opacity", get_alpha)
+      if(g_info.geom != "text"){
+        elements.style("stroke", get_colour);
+      }
     }
     var has_tooltip = g_info.aes.hasOwnProperty("tooltip");
     if(has_clickSelects || has_tooltip || has_clickSelects_variable){
@@ -2009,6 +2114,7 @@ var animint = function (to_select, json_file) {
 	entry.variable = l_info.selector;
 	entry.value = entry.label;
 	entry.id = safe_name(legend_id + "_" + entry["label"]);
+  	entry.text_size = l_info.text_size;
       }
       var legend_rows = legend_table.selectAll("tr")
         .data(l_info.entries)
@@ -2037,6 +2143,7 @@ var animint = function (to_select, json_file) {
 	.attr("colspan", 2)
         .text(l_info.title)
         .attr("class", legend_class)
+        .style("font-size", l_info.title_size)
       ;
       var legend_svgs = legend_rows.append("td")
         .append("svg")
@@ -2069,9 +2176,9 @@ var animint = function (to_select, json_file) {
         legend_svgs.append("text")
 	        .attr("x", 10)
 	        .attr("y", 14)
-          .style("fill", function(d){return d["textcolour"]||1;})
+          	.style("fill", function(d){return d["textcolour"]||1;})
 	        .style("text-anchor", "middle")
-	        .attr("font-size", function(d){return d["textsize"]||1;})
+          	.attr("font-size", function(d){return d["textsize"]||1;})
 	        .text("a");
       }
       if(l_info.geoms.indexOf("path")>-1){
@@ -2103,6 +2210,7 @@ var animint = function (to_select, json_file) {
 	.attr("align", "left") // TODO: right for numbers?
 	.attr("class", "legend_entry_label")
 	.attr("id", function(d){ return d["id"]+"_label"; })
+  	.style("font-size", function(d){ return d["text_size"]})
 	.text(function(d){ return d["label"];});
     }
   }

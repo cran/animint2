@@ -14,6 +14,10 @@ addShowSelectedForLegend <- function(meta, legend, L){
     layer.has.variable <- s.name %in% names(L$data)
 
     if(is.variable.name && layer.has.variable) {
+      ## if the data is data.table, convert it into data.frame
+      if(is.data.table(L$data)){
+        L$data <- as.data.frame(L$data)
+      }
       ## grabbing the variable from the data
       var <- L$data[, s.name]
       is.interactive.aes <-
@@ -734,10 +738,29 @@ getLegend <- function(mb){
          selector = mb$selector,
          is_discrete= mb$is.discrete,
          legend_type = mb$legend_type,
+         text_size = mb$text_size,
+         title_size = mb$title_size,
          entries = data)
   }
 }
 
+
+#' Function to process text size with different types of unit
+#' @param element.name The name of the theme element
+#' @param theme combined theme from plot_theme()
+#' @return character of text size, with unit pt/px
+getTextSize <- function(element.name, theme){
+  input.size <- calc_element(element.name, theme)$size
+  if(is.character(input.size)){
+    if(!grepl('^[0-9]+(px|pt)$', input.size)){
+      default.size <- calc_element(element.name, theme_gray())$size
+      warning(sprintf("%s is not numeric nor character ending with \'pt\' or \'px\', will be default %dpt", element.name, default.size))
+      return(paste(default.size, "pt", sep=""))
+    }
+    return(input.size)
+  }
+  paste(input.size, "pt", sep="")
+}
 
 ##' Save the common columns for each tsv to one chunk
 ##' @param built data.frame of built data.
@@ -747,7 +770,10 @@ getLegend <- function(mb){
 ##' @return a list of common and varied data to save, or NULL if there is
 ##' no common data.
 ##' @importFrom stats na.omit
+##' @import data.table
 getCommonChunk <- function(built, chunk.vars, aes.list){
+  group <- NULL
+  ## Above to avoid CRAN NOTE.
   if(length(chunk.vars) == 0){
     return(NULL)
   }
@@ -760,37 +786,43 @@ getCommonChunk <- function(built, chunk.vars, aes.list){
   ## Remove columns with all NA values
   ## so that common.not.na is not empty
   ## due to the plot's alpha, stroke or other columns
-  all.nas <- sapply(built, function(x){all(is.na(x))})
-  built <- built[, !all.nas]
+  built <- as.data.table(built)
+  ## convert 'built' from df to dt to improve speed
+  built <- built[, lapply(.SD, function(x) {
+    if (all(is.na(x))) {
+      NULL
+    } else {
+        x
+    }
+  })]
 
   ## Treat factors as characters, to avoid having them be coerced to
   ## integer later.
-  for(col.name in names(built)){
-    if(is.factor(built[, col.name])){
-      built[, col.name] <- paste(built[, col.name])
-    }
+  changeCols <- names(Filter(is.factor, built))
+  if(length(changeCols)){
+    built <- built[, (changeCols) := lapply(.SD, as.character), .SDcols = changeCols]
   }
 
   ## If there is only one chunk, then there is no point of making a
   ## common data file.
-  chunk.rows.tab <- table(built[, chunk.vars])
-  if(length(chunk.rows.tab) == 1) return(NULL)
+  chunk.rows.tab <- built[, .N, by = chunk.vars]
+  if(nrow(chunk.rows.tab) == 1) return(NULL)
 
   ## If there is no group column, and all the chunks are the same
   ## size, then add one based on the row number.
   if(! "group" %in% names(built)){
-    chunk.rows <- chunk.rows.tab[1]
-    same.size <- chunk.rows == chunk.rows.tab
-    order.args <- lapply(chunk.vars, function(order.col)built[[order.col]])
-    built <- built[do.call(order, order.args),]
+    chunk.rows <- chunk.rows.tab[1]$N
+    same.size <- chunk.rows == chunk.rows.tab$N
+    built <- data.table::setorderv(built, chunk.vars)
     if(all(same.size)){
-      built$group <- 1:chunk.rows
+      built <- built[, group := rep(1:chunk.rows, length.out = .N)]
     }else{
       ## do not save a common chunk file.
       return(NULL)
     }
   }
 
+  setDF(built)
   built.by.group <- split(built, built$group)
   group.tab <- table(built[, c("group", chunk.vars)])
   each.group.same.size <- apply(group.tab, 1, function(group.size.vec){
@@ -875,21 +907,23 @@ getCommonChunk <- function(built, chunk.vars, aes.list){
 
 
 ##' Extract subset for each data.frame in a list of data.frame
-##' @param df.or.list a data.frame or a list of data.frame.
+##' @param dt.or.list a data.table or a list of data.table.
 ##' @param cols cols that each data.frame would keep.
 ##' @return list of data.frame.
-varied.chunk <- function(df.or.list, cols){
-  if(is.data.frame(df.or.list)){
-    df <- df.or.list[, cols, drop = FALSE]
-    u.df <- unique(df)
-    group.counts <- table(u.df$group)
-    if(all(group.counts == 1)){
-      u.df
+varied.chunk <- function(dt.or.list, cols){
+  group <- NULL
+  ## Above to avoid CRAN NOTE.
+  if(is.data.table(dt.or.list)){
+    dt <- dt.or.list[, cols, with=FALSE, drop=FALSE]
+    u.dt <- unique(dt)
+    group.counts <- u.dt[, .N, by = group]
+    setDF(if(all(group.counts$N == 1)){
+      u.dt
     }else{
-      df
-    }
+      dt
+    })
   } else{
-    lapply(df.or.list, varied.chunk, cols)
+    lapply(dt.or.list, varied.chunk, cols)
   }
 }
 
@@ -905,18 +939,24 @@ split.x <- function(x, vars){
     ## Remove columns with all NA values
     ## so that x is not empty due to
     ## the plot's alpha, stroke or other columns
-    all.nas <- sapply(x, function(col.m){all(is.na(col.m))})
-    x <- x[, !all.nas]
+    x <- as.data.table(x)
+    x <- x[, lapply(.SD, function(x) {
+      if (all(is.na(x))) {
+        NULL
+      } else {
+        x
+      }
+    })]
 
     # rows with NA should not be saved
     x <- na.omit(x)
     if(length(vars) == 1){
-      split(x[names(x) != vars], x[vars], drop = TRUE)
+      split(x, by = vars, keep.by = FALSE, drop = TRUE)
     }else{
       use <- vars[1]
       rest <- vars[-1]
-      df.list <- split(x[names(x) != use], x[use], drop = TRUE)
-      split.x(df.list, rest)
+      dt.list <- split(x, by = use, keep.by = FALSE, drop = TRUE)
+      split.x(dt.list, rest)
     }
   }else if(is.list(x)){
     lapply(x, split.x, vars)
@@ -936,7 +976,7 @@ saveChunks <- function(x, meta){
   if(is.data.frame(x)){
     this.i <- meta$chunk.i
     csv.name <- sprintf("%s_chunk%d.tsv", meta$g$classed, this.i)
-    write.table(x, file.path(meta$out.dir, csv.name), quote=FALSE,
+    data.table::fwrite(x, file.path(meta$out.dir, csv.name), quote=FALSE,
                 row.names=FALSE, sep="\t")
     meta$chunk.i <- meta$chunk.i + 1L
     this.i
