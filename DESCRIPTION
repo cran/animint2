@@ -1,6 +1,6 @@
 Package: animint2
 Title: Animated Interactive Grammar of Graphics
-Version: 2022.9.14
+Version: 2023.3.14
 URL: https://github.com/tdhock/animint2
 BugReports: https://github.com/tdhock/animint2/issues
 Authors@R: c(
@@ -46,7 +46,10 @@ Authors@R: c(
      comment="Animint GSOC 2018"),
     person("Himanshu", "Singh",
      role="aut",
-     comment="Animint2 GSoC 2020"))
+     comment="Animint2 GSoC 2020"),
+    person("Yufan", "Fei",
+     role="aut",
+     comment="Animint2 GSoC 2022"))
 Description: Functions are provided for defining animated,
  interactive data visualizations in R code, and rendering
  on a web page. The 2018 Journal of Computational and 
@@ -56,7 +59,7 @@ Description: Functions are provided for defining animated,
 Depends: R (>= 3.4.0)
 Imports: digest, RJSONIO, grid, gtable (>= 0.1.1), MASS, plyr (>=
         1.7.1), reshape2, scales (>= 0.4.1), stats, knitr (>= 1.5.33),
-        data.table (>= 1.9.8)
+        data.table (>= 1.9.8), methods
 Suggests: servr, gistr (>= 0.2), shiny, RColorBrewer, htmltools,
         rmarkdown, testthat, devtools, httr, maps, ggplot2movies,
         hexbin, Hmisc, lattice, mapproj, maptools, mgcv, nlme, rpart,
@@ -117,9 +120,9 @@ Collate: 'gganimintproto.r' 'aaa-.r' 'aes-calculated.r'
         'z_animintHelpers.R' 'z_facets.R' 'z_geoms.R' 'z_gist.R'
         'z_helperFunctions.R' 'z_knitr.R' 'z_print.R' 'z_scales.R'
         'z_theme_animint.R' 'z_transformShape.R'
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2022-09-15 20:49:53 UTC; tdhock
+Packaged: 2023-03-14 18:17:35 UTC; tdhock
 Author: Toby Hocking [aut, cre] (Original animint code),
   Hadley Wickham [aut] (Forked ggplot2 code),
   Winston Chang [aut] (Forked ggplot2 code),
@@ -133,7 +136,8 @@ Author: Toby Hocking [aut, cre] (Original animint code),
   Jun Cai [aut] (Animint GSOC 2015),
   Faizan Khan [aut] (Animint GSOC 2016-2017),
   Vivek Kumar [aut] (Animint GSOC 2018),
-  Himanshu Singh [aut] (Animint2 GSoC 2020)
+  Himanshu Singh [aut] (Animint2 GSoC 2020),
+  Yufan Fei [aut] (Animint2 GSoC 2022)
 Maintainer: Toby Hocking <toby.hocking@r-project.org>
 Repository: CRAN
-Date/Publication: 2022-09-15 23:06:12 UTC
+Date/Publication: 2023-03-14 19:00:02 UTC

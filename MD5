@@ -1,6 +1,6 @@
-9c6c69a3a61ae4c65058febab859aa15 *DESCRIPTION
-d8da429ce8c17b3f7bfeabab01163530 *NAMESPACE
-6b1a598588b795a35a06fae05df9ae92 *NEWS
+ace39b338812cd196b9c033eb20ab377 *DESCRIPTION
+8bf2ca06e54c92bea3b3ed90f79629bf *NAMESPACE
+e6b7e31311c0c6307aecff8b03574ef5 *NEWS
 a774e6588fbb88a57d1a4ea2d426d647 *R/aaa-.r
 41c9ba0c55c5b2dac5c2ba80a9e6f0f0 *R/aes-calculated.r
 a744d7b67886c9a66068cffb5e71699a *R/aes-colour-fill-alpha.r
@@ -26,7 +26,7 @@ ec75530de3f648e33cdb16b15c161cca *R/coord-map.r
 2114349ccd96f2ce3cb1e756f12eb3d2 *R/coord-quickmap.R
 e591005e69ef563fae0fdaef3600a9d7 *R/coord-transform.r
 64ec960ab4a531891db0f381475c616c *R/data.R
-1cc34cbdb97662693545d1f09f53c080 *R/facet-.r
+20c3a131a640c7d452d46c06824004b5 *R/facet-.r
 e14515d27bb230ebf9e58f0c03292152 *R/facet-grid-.r
 1c17699641022dfd5a3f534c1c5e5d56 *R/facet-labels.r
 bf8ddb7258fdc55f31454b5f6b82ab1e *R/facet-layout.r
@@ -79,12 +79,12 @@ c75cc44f974971ada3940cb36f748344 *R/geom-rect.r
 a11110dc63d8e373ed71cef3a0439606 *R/gganimintproto.r
 7fbb4a1b3a36deea08d5990dc9b82bb6 *R/ggplot2.r
 abe3e869859c7f73fa4a9721df2ef29e *R/grob-absolute.r
-57c5dee7337f17082fde9a43d071cc2c *R/grob-dotstack.r
+0adf1c7dc317bfa456d91551b58246be *R/grob-dotstack.r
 95d44bd0d180dca5892db5674bec6362 *R/grob-null.r
 a432566834bd4321476e8c8e1a5993f6 *R/grouping.r
 b3821e6947c026222cf9745a60c7a5d0 *R/guide-colorbar.r
 1fad1b1dbe111530a190525ffaffe5ca *R/guide-legend.r
-8df09bbfc52f78f67f1e664ea539b975 *R/guides-.r
+8b619166c5e8647e267d275df13f0e30 *R/guides-.r
 a6a7662bace821f91da3ababf1f42c11 *R/guides-axis.r
 91319825178764869b02d5ed527637e8 *R/guides-grid.r
 4516ab6dab4a8799e669a5c64b917a92 *R/hexbin.R
@@ -136,7 +136,7 @@ aeb4dad5b6878e22d8ff7e4e0895b35d *R/stat-bindot.r
 5350265fd2a8fddcf19877ecaa0e2a61 *R/stat-density-2d.r
 32d88e0ee3a860e1d70eee031fa2e355 *R/stat-density.r
 19b10d2f99012bea3ae98b93bc40ae05 *R/stat-ecdf.r
-74c7a5dfa78c3a953cc23d15bb3f31cc *R/stat-ellipse.R
+7e41ed54c9ac5199cb6c2ce7384ca8f8 *R/stat-ellipse.R
 9883198e291fc923889ab1aae09f6dee *R/stat-function.r
 69214e1213fb53ae435d56787db85355 *R/stat-identity.r
 7ba369f17bcc95531e17b5fe8c93cf24 *R/stat-qq.r
@@ -150,7 +150,7 @@ da4905a1ec4260d4723dde091f32b940 *R/stat-summary-2d.r
 98cad9fe9bdac9b120185bbb64a385db *R/stat-unique.r
 cd5c79844ed06be8d0013bf439458f98 *R/stat-ydensity.r
 0983d9af7b0eda1a1e4297ae0fab76ac *R/summary.r
-0827b28ddf617d287443293fde36832c *R/theme-defaults.r
+4241124ee749d3623d888de5b6239587 *R/theme-defaults.r
 0031ab39fbfbcd86bbefd7c617d8db0f *R/theme-elements.r
 724b909fc7744d24ca5fb4b724aa9d71 *R/theme.r
 b97bd5e0d2c69643142fb2b4529a0cad *R/translate-qplot-ggplot.r
@@ -163,19 +163,19 @@ a2f6c224351ced0c10b6f55dcd941fd3 *R/utilities-resolution.r
 e72a2689dc0d2076b7492a6ebd165b62 *R/utilities-table.r
 61e01ba50abafb30090b6f79f823cb9c *R/utilities.r
 eeec75de61894ddc1238ba5c894879b2 *R/uu_zxx.r
-9ba24b6237d2e367c3f4c30d8cd968d1 *R/uu_zzz.r
-649beca8d422b1809630906b329f4434 *R/z_animint.R
-4a9bea503934a4d79d1af17311130132 *R/z_animintHelpers.R
+7c594ed0210f0db7abf4d6384fda126f *R/uu_zzz.r
+d26fd4a756f9475558966759efdd8958 *R/z_animint.R
+0518032ed01ea9f376738720bc10fd9d *R/z_animintHelpers.R
 f48e4c0e21d4287367de4c8ddbf54244 *R/z_facets.R
 c2a7901959bb0254e1d3f1e98c9a6653 *R/z_geoms.R
 ead83669f2e5fd24be80dfeca785f085 *R/z_gist.R
 394b1fb48857a8e98a15081e3835f45e *R/z_helperFunctions.R
 907b4ce4590d799a2e3d050b299733ee *R/z_knitr.R
-e05a88972900c4edc17e10a71d5a8bf9 *R/z_print.R
+394efe4db641c8fb3b7e7c17c5d7ab5d *R/z_print.R
 4989e85f05b730723e9c47558e94cf8a *R/z_scales.R
 31a5ddbd1fdef51544e65073b968d786 *R/z_theme_animint.R
 f0150340fc0f11083c2cbc359f78611f *R/z_transformShape.R
-4717072f02950fe595171250b123db10 *build/partial.rdb
+b3d11e44a5dfa7f5b4ceaec0c576fbf6 *build/partial.rdb
 4ef9a4ee212c27f85e529f058e3803b5 *data/FluView.RData
 fc4b15e06f5d3c91d6610d798f9b66db *data/UStornadoes.RData
 2c9a04c7466cc496e70605f176969b7a *data/WorldBank.RData
@@ -194,7 +194,7 @@ e1ef68be302f256fe79e1e2833f5f50f *data/presidential.rda
 d419c85de9cb971b7ebec959a836f72c *data/seals.rda
 2012af9687f6f5813b8aa6aa86773c67 *data/txhousing.rda
 25c044ba45986c97b21b182dedb3f09a *data/worldPop.RData
-f7f15ca0a8146f67fdd5ae54ea2ff97b *inst/htmljs/animint.js
+eddea506f92afd1c5e7fa1666ee3daa1 *inst/htmljs/animint.js
 9118c3cdf9edf7c2e600e09a6331814e *inst/htmljs/index.html
 bdab018667fa9da67b30aa44c7f6b6e1 *inst/htmljs/scripts.html
 d41d8cd98f00b204e9800998ecf8427e *inst/htmljs/styles.css
@@ -217,7 +217,7 @@ e57137f0a04f83b19dab8730c3e4d419 *man/aes_auto.Rd
 bc7ab2cfe38321c546ecac541be68b5b *man/aes_colour_fill_alpha.Rd
 a7d2663e80f9fe065146783224a7476a *man/aes_linetype_size_shape.Rd
 31e1b7d2f69f52fae691b7d1727794b0 *man/aes_position.Rd
-83a97ff3b32e7426b4f77def26d7f592 *man/animint.Rd
+dd6e25ec1dac3928e392e26e49cdc0ed *man/animint.Rd
 4338b96fc060b15112f62a56c5d0d824 *man/animint2-gganimintproto.Rd
 fbc7689a5c8c09949ae3ee893ef064a2 *man/animint2dir.Rd
 92f757ddafcf2364c76309772c0c8919 *man/animint2gist.Rd
@@ -316,6 +316,7 @@ d64c986b5d92aa308d809c3aabaca690 *man/ggplot_build.Rd
 7d1147d84c3ff63b7afeaa9d94ec7da5 *man/ggplot_gtable.Rd
 1c4b0e0d44acd10092d8180a384c0b27 *man/ggsave.Rd
 19d0f57064727bb37e284fcda428a25e *man/ggtheme.Rd
+f85e10f51661b4836ff174c2178d071a *man/graphical-units.Rd
 13cc41d8aa348f3ff9797916ee973294 *man/guide_colourbar.Rd
 9341081077eb63f8534e1ec8065fa304 *man/guide_legend.Rd
 658cb8173a9a17c713647fdfd54c5604 *man/guides.Rd
@@ -372,7 +373,7 @@ bb26601f5058f8b9083f62cf802daf94 *man/reexports.Rd
 83033950e7f3369c550bfd78c7e3a6cd *man/resolution.Rd
 738f4da6484a6944f022208747ed5432 *man/saveChunks.Rd
 2b5ab1831abf271380888850f8781403 *man/scale_alpha.Rd
-b453c15347ef97cd2cdc4963f25af27c *man/scale_brewer.Rd
+7f08d21e7e8b74e613f1dde69bb885d7 *man/scale_brewer.Rd
 741d6fd1877ee54666fb874408847de7 *man/scale_continuous.Rd
 7dfa797665948a14c08a8d1790bc2d81 *man/scale_date.Rd
 71c2289e7d614913c9caf1e4ed32ee09 *man/scale_discrete.Rd
@@ -391,7 +392,7 @@ e05f0a5ec52b47444c59b1b0c7e39cce *man/setPlotSizes.Rd
 953f55d7927dc808a6045494e86ca9ff *man/should_stop.Rd
 34f1280175e1fb9fbf6b52c3d160b4d0 *man/split.x.Rd
 bb331637bdd97963f42fb27a1025716a *man/stat_ecdf.Rd
-366df96d126aceed4ca1856216ab5262 *man/stat_ellipse.Rd
+649a7355e0c79020066e08e9fe7ba8b9 *man/stat_ellipse.Rd
 b0d94b7a0c1d19c86f70f3c322eacd07 *man/stat_function.Rd
 2d997b4f5717bbf032fd567e5ecda2da *man/stat_identity.Rd
 e491388ed778fd69b5812425a1411cc2 *man/stat_qq.Rd
@@ -418,9 +419,9 @@ c631b0513d0bc46a6989a5b851af62e0 *man/worldPop.Rd
 383cad5462bbfd4c96e49448bf5bfed5 *man/zeroGrob.Rd
 64dbe1a9f4fac691c0f8a9ffad70d906 *tests/namespace.R
 b892eca66e0d3b98635cc0801f05410e *tests/testthat.R
-077c506cd3fce690ba43a9061fc76a6a *tests/testthat/helper-functions.R
+1196e6dc5e63fa89a529642a9aad3e67 *tests/testthat/helper-functions.R
 d3a921ea3008eada9d101257f4f15594 *tests/testthat/helper-plot-data.r
-1e098484a31b51511f34ba4bc030e120 *tests/testthat/pids.txt
+eb424608a601ad39f93cde30c6209c84 *tests/testthat/pids.txt
 56417865028605cba1c09e3a5f39663a *tests/testthat/test-compiler-aes-ggplot.r
 1076ad0ef6acd3a78dd8db456f9bba04 *tests/testthat/test-compiler-aes-grouping.r
 ae2c17740d61430bc7c28953b49e61d2 *tests/testthat/test-compiler-aes-setting.r
@@ -489,7 +490,7 @@ b37994b42d14f0ef108a77a0b67db7b0 *tests/testthat/test-renderer1-facet-coord.R
 f3e5dc48a5d46f00452803a9ef462deb *tests/testthat/test-renderer1-facet-lines.R
 0ee589a9bdd4434dd3ea5c53192ef7c1 *tests/testthat/test-renderer1-facet-space.R
 43f124a767dce5e98b915b98b2e70989 *tests/testthat/test-renderer1-facet-trivial.R
-503cf9457fba039abe8ca54f124e1665 *tests/testthat/test-renderer1-facets-strips.R
+c14bc8ff6f6ab5ac9d6094907391d3c4 *tests/testthat/test-renderer1-facets-strips.R
 4c3e67cbca9c614f036a2d9ccf26e53c *tests/testthat/test-renderer1-geom-abline.R
 be22e26ace113bb78638c5659410a481 *tests/testthat/test-renderer1-global-variables.R
 91e533bd17bb265b32fae595de4ef59a *tests/testthat/test-renderer1-hjust-text-anchor.R
@@ -509,7 +510,7 @@ b26f9d118d41a188bcae848ec361d0cb *tests/testthat/test-renderer1-panels.R
 9d243f4f1dba34cafd1c59536a00cd0e *tests/testthat/test-renderer1-rect-size.R
 ccd05bbb26b0a5803ba7354a57306945 *tests/testthat/test-renderer1-segment-size.R
 5a3cda3f6639fb221ae8cb1ec4ca1574 *tests/testthat/test-renderer1-text.R
-f30980abeded2b509b7ad0796bcebd3d *tests/testthat/test-renderer1-theme-text-size.R
+5d39e09e346224d09fb09db7ca08b04d *tests/testthat/test-renderer1-theme-text-size.R
 7c66b805b297abf7efd521c050e60576 *tests/testthat/test-renderer1-tooltip.R
 00ed54ae370f00b361d883baf6a799c1 *tests/testthat/test-renderer1-url-fragment.R
 e3a59b7c766881e05619bf7de5996e87 *tests/testthat/test-renderer1-variable-value.R
@@ -540,3 +541,4 @@ ebda596c07b8203d8066e07139560611 *tests/testthat/test-renderer4-prostateLasso.R
 0f7666ccb62c1b1fd9cf47298914e1b9 *tests/testthat/test-renderer5-tooltip-interactivity.R
 55bec0ffd9843713c600cd5ee6454140 *tests/testthat/test-shiny.R
 d5cc40e529320ca0bdf91eb7b7408756 *tests/testthat/test-tt-inter.R
+b4add56bff9de0ac82450a09f9f79116 *tests/testthat/testthat-problems.rds

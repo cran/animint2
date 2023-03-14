@@ -1,3 +1,12 @@
+Changes in version 2023.3.14
+
+- Changes to satisfy CRAN (import is, consistent function args, graphical-units.Rd, rm Fox book URL in stat_ellipse.Rd).
+- facet and plot title text size configurable via theme(strip.text, axis.text).
+
+Changes in version 2022.9.14
+
+- Include Yufan Fei as contributor in DESCRIPTION.
+
 Changes in version 2022.9.14
 
 - Allow configurable legend/axis text size via theme.
@@ -17,7 +26,6 @@ Changes in version 2022.5.25
 Changes in version 2022.5.24
 
 - Fixed small test regression and set up Github Actions. Neither of these is user facing.
--  
 
 Changes in version 2022.2.2
 
