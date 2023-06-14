@@ -1,6 +1,6 @@
 Package: animint2
 Title: Animated Interactive Grammar of Graphics
-Version: 2023.3.14
+Version: 2023.6.11
 URL: https://github.com/tdhock/animint2
 BugReports: https://github.com/tdhock/animint2/issues
 Authors@R: c(
@@ -56,15 +56,14 @@ Description: Functions are provided for defining animated,
  Graphical Statistics paper,
  <doi:10.1080/10618600.2018.1513367>
  describes the concepts implemented.
-Depends: R (>= 3.4.0)
+Depends: R (>= 3.5.0)
 Imports: digest, RJSONIO, grid, gtable (>= 0.1.1), MASS, plyr (>=
         1.7.1), reshape2, scales (>= 0.4.1), stats, knitr (>= 1.5.33),
         data.table (>= 1.9.8), methods
-Suggests: servr, gistr (>= 0.2), shiny, RColorBrewer, htmltools,
+Suggests: servr, sp, gistr (>= 0.2), shiny, RColorBrewer, htmltools,
         rmarkdown, testthat, devtools, httr, maps, ggplot2movies,
-        hexbin, Hmisc, lattice, mapproj, maptools, mgcv, nlme, rpart,
-        svglite, ggplot2
-Enhances: sp
+        hexbin, Hmisc, lattice, mapproj, mgcv, nlme, rpart, svglite,
+        ggplot2
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -122,7 +121,7 @@ Collate: 'gganimintproto.r' 'aaa-.r' 'aes-calculated.r'
         'z_theme_animint.R' 'z_transformShape.R'
 RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2023-03-14 18:17:35 UTC; tdhock
+Packaged: 2023-06-14 19:40:20 UTC; tdhock
 Author: Toby Hocking [aut, cre] (Original animint code),
   Hadley Wickham [aut] (Forked ggplot2 code),
   Winston Chang [aut] (Forked ggplot2 code),
@@ -140,4 +139,4 @@ Author: Toby Hocking [aut, cre] (Original animint code),
   Yufan Fei [aut] (Animint2 GSoC 2022)
 Maintainer: Toby Hocking <toby.hocking@r-project.org>
 Repository: CRAN
-Date/Publication: 2023-03-14 19:00:02 UTC
+Date/Publication: 2023-06-14 20:22:08 UTC
