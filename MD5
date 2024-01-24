@@ -1,6 +1,6 @@
-43f329c7f03d72c7214037e92f14c963 *DESCRIPTION
+83cf0440c27bfbb16e8348e6639133fc *DESCRIPTION
 77c3f18bdf7b248021d6774ba77e3aab *NAMESPACE
-6d65eec33c9619d9e49e5a402254054d *NEWS.md
+f516b8adcf67fe5f8eb1e3ee3e254786 *NEWS.md
 fce78596c5e953b9441481eabbc60069 *R/aaa-.r
 20e168d837526d91ce61272172374522 *R/aes-calculated.r
 b4f2f32bd65a6d0f3e2f8123c5c47024 *R/aes-colour-fill-alpha.r
@@ -164,9 +164,9 @@ b1a803ac92d44cd483338c56f115af24 *R/utilities-help.r
 bf0e0515ad905c2710732f2a8194ea51 *R/utilities.r
 eeec75de61894ddc1238ba5c894879b2 *R/uu_zxx.r
 037a8502e6eb6dde668c400fb68430ca *R/uu_zzz.r
-13c4d2f98883b1ed2406f716244e70bb *R/z_animint.R
+c787aab1ef3d3a7d0a3fbb3f8aff682d *R/z_animint.R
 08fba1dd0bc49286422975ccef32d846 *R/z_animintHelpers.R
-532424efeab113349ecdac82f37e031e *R/z_facets.R
+82919708935bee8ed0369767beba14a8 *R/z_facets.R
 39117dbf542a9e091252369dee8580b6 *R/z_geoms.R
 f7ef3f2d2bab419b6642ecb10c6010af *R/z_helperFunctions.R
 b94bc806bdda58b7ce2ee56d4eeb0bd6 *R/z_knitr.R
@@ -175,7 +175,7 @@ b94bc806bdda58b7ce2ee56d4eeb0bd6 *R/z_knitr.R
 4989e85f05b730723e9c47558e94cf8a *R/z_scales.R
 31a5ddbd1fdef51544e65073b968d786 *R/z_theme_animint.R
 f0150340fc0f11083c2cbc359f78611f *R/z_transformShape.R
-1d90426dfe7e1f1cf692e948cf91bb93 *build/partial.rdb
+e9c471010b772d012dc297ea136ca927 *build/partial.rdb
 4ef9a4ee212c27f85e529f058e3803b5 *data/FluView.RData
 fc4b15e06f5d3c91d6610d798f9b66db *data/UStornadoes.RData
 2c9a04c7466cc496e70605f176969b7a *data/WorldBank.RData
@@ -219,7 +219,7 @@ ea235a68ecd296f8872d633c5019613f *man/aes_linetype_size_shape.Rd
 6feb152a71f929f56928710d80f88974 *man/aes_position.Rd
 2616fbbd92fb19c35b468b68f5f34695 *man/animint.Rd
 91639ed859725334c125310f1d2d5b23 *man/animint2-gganimintproto.Rd
-f3b32961c4ba06b8b39cab17f390ba96 *man/animint2dir.Rd
+a857352cb97185df2a693eaa0d5930dd *man/animint2dir.Rd
 a1514f4283f3d1bc664a21b64a74cf7d *man/animint2pages.Rd
 a02215a3c10cad6c1c2923fa4cc65fba *man/animintOutput.Rd
 c5f2044d61fdb3259cd209348b58b6d2 *man/annotate.Rd
@@ -490,7 +490,7 @@ eca8525a54cf58ea03ba63e1275fe6cd *tests/testthat/test-renderer1-PeakConsistency.
 1e2fe9981f78dd951d7486da1cb18c36 *tests/testthat/test-renderer1-coord.R
 28814ee8c495a6a82f1b8f6059cb63c7 *tests/testthat/test-renderer1-facet-coord.R
 ffa478c3d5e31fa7753db54f0050197f *tests/testthat/test-renderer1-facet-lines.R
-954c1c221665eb0eeb7b39dd098803cd *tests/testthat/test-renderer1-facet-space.R
+aabe06a14ef05415227a1ffdf09f0b43 *tests/testthat/test-renderer1-facet-space.R
 8f4ca8e4f315fd560f96d8e8e2e8c5f6 *tests/testthat/test-renderer1-facet-trivial.R
 c2a6937a64af6c05d33c262d9eb60d24 *tests/testthat/test-renderer1-facets-strips.R
 286c338468005815f1efd5604ac9a786 *tests/testthat/test-renderer1-geom-abline.R

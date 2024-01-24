@@ -1,6 +1,6 @@
 Package: animint2
 Title: Animated Interactive Grammar of Graphics
-Version: 2023.11.21
+Version: 2024.1.24
 URL: https://animint.github.io/animint2/
 BugReports: https://github.com/animint/animint2/issues
 Authors@R: c(
@@ -60,13 +60,13 @@ Description: Functions are provided for defining animated,
  <doi:10.1080/10618600.2018.1513367>
  describes the concepts implemented.
 Depends: R (>= 3.5.0)
-Imports: digest, RJSONIO, grid, gtable (>= 0.1.1), MASS, plyr (>=
-        1.7.1), reshape2, scales (>= 0.4.1), stats, knitr (>= 1.5.33),
-        data.table (>= 1.9.8), methods
-Suggests: servr, gert, gitcreds, gh, sp, gistr (>= 0.2), shiny,
-        RColorBrewer, htmltools, rmarkdown, testthat, devtools, httr,
-        maps, ggplot2movies, hexbin, Hmisc, lattice, mapproj, mgcv,
-        nlme, rpart, svglite, ggplot2
+Imports: servr, digest, RJSONIO, grid, gtable (>= 0.1.1), MASS, plyr
+        (>= 1.7.1), reshape2, scales (>= 0.4.1), stats, knitr (>=
+        1.5.33), data.table (>= 1.9.8), methods
+Suggests: gert, gitcreds, gh, sp, gistr (>= 0.2), shiny, RColorBrewer,
+        htmltools, rmarkdown, testthat, devtools, httr, maps,
+        ggplot2movies, hexbin, Hmisc, lattice, mapproj, mgcv, nlme,
+        rpart, svglite, ggplot2
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -125,7 +125,7 @@ Collate: 'gganimintproto.r' 'aaa-.r' 'aes-calculated.r'
 RoxygenNote: 7.2.3
 Config/Needs/website: tidyverse/tidytemplate
 NeedsCompilation: no
-Packaged: 2023-11-21 21:55:56 UTC; th798
+Packaged: 2024-01-24 21:01:58 UTC; th798
 Author: Toby Hocking [aut, cre] (Original animint code),
   Hadley Wickham [aut] (Forked ggplot2 code),
   Winston Chang [aut] (Forked ggplot2 code),
@@ -144,4 +144,4 @@ Author: Toby Hocking [aut, cre] (Original animint code),
   Jocelyne Chen [aut] (Animint2 GSoC 2023)
 Maintainer: Toby Hocking <toby.hocking@r-project.org>
 Repository: CRAN
-Date/Publication: 2023-11-21 23:10:03 UTC
+Date/Publication: 2024-01-24 21:30:02 UTC
