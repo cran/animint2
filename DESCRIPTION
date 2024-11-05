@@ -1,6 +1,6 @@
 Package: animint2
 Title: Animated Interactive Grammar of Graphics
-Version: 2024.1.24
+Version: 2024.11.2
 URL: https://animint.github.io/animint2/
 BugReports: https://github.com/animint/animint2/issues
 Authors@R: c(
@@ -8,6 +8,9 @@ Authors@R: c(
      email="toby.hocking@r-project.org",
      role=c("aut", "cre"),
      comment="Original animint code"),
+    person("Biplab", "Sutradhar",
+     role = "ctb",
+     comment = "Updated animist.js to use class for source links"),
     person("Hadley", "Wickham",
      role=c("aut"),
      comment="Forked ggplot2 code"),
@@ -50,9 +53,12 @@ Authors@R: c(
     person("Yufan", "Fei",
      role="aut",
      comment="Animint2 GSoC 2022"),
-	person("Jocelyne", "Chen",
-	 role="aut",
-	 comment="Animint2 GSoC 2023"))
+    person("Jocelyne", "Chen",
+     role="aut",
+     comment="Animint2 GSoC 2023"),
+    person("Siddhesh", "Deodhar",
+     role="aut",
+     comment="Animint2 GSoC 2024"))
 Description: Functions are provided for defining animated,
  interactive data visualizations in R code, and rendering
  on a web page. The 2018 Journal of Computational and 
@@ -64,9 +70,9 @@ Imports: servr, digest, RJSONIO, grid, gtable (>= 0.1.1), MASS, plyr
         (>= 1.7.1), reshape2, scales (>= 0.4.1), stats, knitr (>=
         1.5.33), data.table (>= 1.9.8), methods
 Suggests: gert, gitcreds, gh, sp, gistr (>= 0.2), shiny, RColorBrewer,
-        htmltools, rmarkdown, testthat, devtools, httr, maps,
+        htmltools, rmarkdown, testthat, XML, devtools, httr, maps,
         ggplot2movies, hexbin, Hmisc, lattice, mapproj, mgcv, nlme,
-        rpart, svglite, ggplot2
+        rpart, svglite, ggplot2, chromote, magick
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -122,11 +128,13 @@ Collate: 'gganimintproto.r' 'aaa-.r' 'aes-calculated.r'
         'z_animintHelpers.R' 'z_facets.R' 'z_geoms.R'
         'z_helperFunctions.R' 'z_knitr.R' 'z_pages.R' 'z_print.R'
         'z_scales.R' 'z_theme_animint.R' 'z_transformShape.R'
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 Config/Needs/website: tidyverse/tidytemplate
 NeedsCompilation: no
-Packaged: 2024-01-24 21:01:58 UTC; th798
+Packaged: 2024-11-04 18:03:31 UTC; hoct2726
 Author: Toby Hocking [aut, cre] (Original animint code),
+  Biplab Sutradhar [ctb] (Updated animist.js to use class for source
+    links),
   Hadley Wickham [aut] (Forked ggplot2 code),
   Winston Chang [aut] (Forked ggplot2 code),
   RStudio [cph] (Forked ggplot2 code),
@@ -141,7 +149,8 @@ Author: Toby Hocking [aut, cre] (Original animint code),
   Vivek Kumar [aut] (Animint GSOC 2018),
   Himanshu Singh [aut] (Animint2 GSoC 2020),
   Yufan Fei [aut] (Animint2 GSoC 2022),
-  Jocelyne Chen [aut] (Animint2 GSoC 2023)
+  Jocelyne Chen [aut] (Animint2 GSoC 2023),
+  Siddhesh Deodhar [aut] (Animint2 GSoC 2024)
 Maintainer: Toby Hocking <toby.hocking@r-project.org>
 Repository: CRAN
-Date/Publication: 2024-01-24 21:30:02 UTC
+Date/Publication: 2024-11-05 09:00:07 UTC

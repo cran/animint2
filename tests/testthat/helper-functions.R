@@ -65,8 +65,8 @@ getSelectorWidgets <- function(html=getHTML()){
 clickHTML <- function(...){
   v <- c(...)
   stopifnot(length(v) == 1)
-  e <- remDr$findElement(names(v), as.character(v))
-  e$clickElement()
+  selectorValue <- as.character(v)
+  clickID(selectorValue)  
   Sys.sleep(1)
   getHTML()
 }
@@ -74,7 +74,7 @@ clickHTML <- function(...){
 clickID <- function(...){
   v <- c(...)
   stopifnot(length(v) == 1)
-  remDr$executeScript(sprintf("document.getElementById('%s').dispatchEvent(new CustomEvent('click'))", as.character(v)))
+  runtime_evaluate_helper(id=v,dispatch_event=TRUE)
 }
 
 rgba.pattern <- paste0(
@@ -330,10 +330,7 @@ unequal <- function(object, expected, ...){
 #' tests_exit()
 #' }
 #'
-
 tests_run <- function(dir = ".", filter = NULL) {
-  if (!"package:RSelenium" %in% search())
-    stop("Please load RSelenium: library(RSelenium)")
   if (!"package:testthat" %in% search())
     stop("Please load testthat: library(testthat)")
   testDir <- find_test_path(dir)
@@ -354,18 +351,8 @@ tests_run <- function(dir = ".", filter = NULL) {
 #' @seealso \link{tests_run}
 #' @export
 tests_exit <- function() {
-  res <- stop_binary()
   Sys.unsetenv("ANIMINT_BROWSER")
-  f <- file.path(find_test_path(), "pids.txt")
-  if (file.exists(f)) {
-    e <- try(readLines(con <- file(f), warn = FALSE), silent = TRUE)
-    if (!inherits(e, "try-error")) {
-      pids <- as.integer(e)
-      res <- c(res, tools::pskill(pids))
-    }
-    close(con)
-    unlink(f)
-  }
+  res <- stop_servr(tmpPath = find_test_path())
   invisible(all(res))
 }
 
@@ -377,30 +364,13 @@ tests_exit <- function() {
 #' @param port port number to _attempt_ to run server on.
 #' @param code R code to execute in a child session
 #' @return port number of the successful attempt
-run_servr <- function(directory = ".", port = 4848,
-                      code = "servr::httd(dir='%s', port=%d)") {
-  dir <- normalizePath(directory, winslash = "/", mustWork = TRUE)
-  cmd <- sprintf(
-    paste("write.table(Sys.getpid(), file='%s', append=T, row.name=F, col.names=F);", code),
-    file.path(find_test_path(), "pids.txt"), dir, port
-  )
-  system2("Rscript", c("-e", shQuote(cmd)), wait = FALSE)
+run_servr <- function(directory, port) {
+  start_servr(directory, port, tmpPath = find_test_path())
 }
 
 # --------------------------
 # Functions that are used in multiple places
 # --------------------------
-
-stop_binary <- function() {
-  if (exists("pJS")) pJS$stop()
-  # these methods are really queries to the server
-  # thus, if it is already shut down, we get some arcane error message
-  e <- try({
-    remDr$closeWindow()
-    remDr$closeServer()
-  }, silent = TRUE)
-  TRUE
-}
 
 # find the path to animint's testthat directory
 find_test_path <- function(dir = ".") {
@@ -417,3 +387,15 @@ find_test_path <- function(dir = ".") {
   file.path(dir, ext_dir)
 }
 
+runtime_evaluate <- function(script=NULL){
+  remDr$Runtime$evaluate(script,returnByValue = TRUE)$result$value
+}
+
+runtime_evaluate_helper <- function(class_name=NULL, id=NULL, list_num=NULL, dispatch_event=NULL) {
+  runtime_evaluate(script = paste0(
+    "document",
+    if(is.character(id))sprintf(".getElementById('%s')", id),
+    if(is.character(class_name))sprintf(".getElementsByClassName('%s')", class_name),
+    if(is.atomic(list_num))sprintf("[%d]", as.integer(list_num)),
+    if(isTRUE(dispatch_event))".dispatchEvent(new CustomEvent('click'))"))
+}

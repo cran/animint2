@@ -82,21 +82,22 @@ print.animint <- function(x, ...){
 ##'     scale_size_animint(pixel.range=c(2,20), breaks=10^(4:9)))
 animint <- function(...){
   L <- list(...)
-  default.name.vec <- plot.num.vec <- paste0("plot", seq_along(L))
-  match.name.list <- lapply(match.call()[-1], paste)
-  first.name.vec <- sapply(match.name.list, "[", 1)
-  sub.name.vec <- gsub("[^a-zA-Z0-9]", "", first.name.vec)
-  name.ok <- grepl("^[a-zA-Z][a-zA-Z0-9]*$", sub.name.vec)
-  use.name <- sapply(match.name.list, length)==1 & name.ok
-  default.name.vec[use.name] <- sub.name.vec[use.name]
+  # Check if argument list is empty
+  if(length(L) == 0) {
+    stop("No arguments passed to animint. Arguments should include ggplots(1 or more) and options(0 or more)")
+  }
+  plot.num.vec <- paste0("plot", seq(1, length(L)*2))
+  default.name.vec <- plot.num.vec[!plot.num.vec %in% names(L)][1:length(L)]
   if(is.null(names(L))){
     names(L) <- default.name.vec
   }
-  still.empty <- names(L)==""
+  still.empty <- is.na(names(L)) | names(L)==""
   names(L)[still.empty] <- default.name.vec[still.empty]
   name.tab <- table(names(L))
-  is.rep <- names(L) %in% names(name.tab)[1 < name.tab]
-  names(L)[is.rep] <- plot.num.vec[is.rep]
+  rep.names <- names(name.tab)[1 < name.tab]
+  if(length(rep.names)){
+    stop("Duplicate named arguments are passed to animint. Duplicate argument names found: ", paste(rep.names, collapse=","))
+  }
   structure(L, class="animint")
 }
 

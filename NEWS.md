@@ -1,3 +1,40 @@
+# Changes in version 2024.11.2 (PR#163)
+
+- Added [gtable] to \link{gtable} to fix new CRAN issue (\link{} targets missing package anchors).
+
+# Changes in version 2024.10.10 (PR#154)
+
+- Updated `animist.js` to use classes for source links, resolving issue #145.
+
+# Changes in version 2024.9.18 (PR#131)
+  
+- Added functionality to capture screenshot in animint2pages
+
+# Changes in version 2024.9.17
+
+- @export for internal S3 methods, to quiet roxygen2::document() messages.
+ 
+# Changes in version 2024.8.29 (PR#147)
+ 
+- animint2pages initial commit README.md uses viz title.
+- animint2pages gains owner argument, with default taken from `gh::gh_whoami` (same as before, always returns user, even when token has permissions on an org); this allows user to specify an org where the user/token has write permissions. This is used in a new test-compiler-ghpages.R, which now assumes `PAT_GITHUB` has Administration and Contents permissions for all repos in `animint-test` org, so our test code can delete the `animint2pages_test_repo`, create a new one, and then use animint2pages twice, to test the results of creation/update.
+
+# Changes in version 2024.8.27 (PR#144)
+ 
+- Remove selenium, combine renderer tests into single CI job.
+
+# Changes in version 2024.6.6 (PR#126)
+ 
+- Add chromote as headless browser for testing and remove phantomjs/firefox support
+
+# Changes in version 2024.3.12 (PR#119)
+ 
+- Add validation checks for duplicate args passed geom and aes
+  
+# Changes in version 2024.2.4 (PR#116)
+ 
+- Add validation checks for duplicate and missing args passed to animint.
+
 # Changes in version 2024.1.24 (PR#112)
 
 - move servr from Suggests to Imports, for more user-friendly installation / getting started for newbies (no need for separate install command for servr).

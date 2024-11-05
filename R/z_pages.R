@@ -8,6 +8,7 @@
 #' @param plot.list A named list of ggplots and option lists.
 #' @param github_repo The name of the GitHub repository to which the
 #'   files will be pushed.
+#' @param owner The user/org under which the repo will be created, default comes from \code{gh::gh_whoami}.
 #' @param commit_message A string specifying the commit message for
 #'   the pushed files.
 #' @param private A logical flag indicating whether the GitHub
@@ -22,34 +23,55 @@
 #' @examples
 #' \dontrun{
 #' library(animint2)
-#' p1 <- ggplot(mtcars, aes(x = mpg, y = wt)) +
-#'   geom_point()
-#' p2 <- ggplot(mtcars, aes(x = hp, y = wt)) +
-#'   geom_point()
-#' viz <- list(plot1 = p1, plot2 = p2)
-#' animint2pages(
-#'   viz,
-#'   github_repo = "my_animint2_plots",
-#'   commit_message = "New animint",
-#'   private = TRUE)
+#' mtcars$Cyl <- factor(mtcars$cyl)
+#' viz <- animint(
+#'   ggplot(mtcars, aes(x = mpg, y = disp, color=Cyl)) +
+#'     geom_point(),
+#'   ggplot(mtcars, aes(x = hp, y = wt, color=Cyl)) +
+#'     geom_point(),
+#'   title="Motor Trend Cars data viz",
+#'   source="https://github.com/animint/animint2/blob/master/R/z_pages.R"
+#' )
+#' animint2pages(viz, "animint2pages-example-mtcars")
 #' }
-#'
+#' 
 #' @export
-animint2pages <- function(plot.list, github_repo, commit_message = "Commit from animint2pages", private = FALSE, required_opts = c("title","source"), ...) {
+animint2pages <- function(plot.list, github_repo, owner=NULL, commit_message = "Commit from animint2pages", private = FALSE, required_opts = c("title","source"), ...) {
   for(opt in required_opts){
     if(!opt %in% names(plot.list)){
       stop(sprintf("plot.list does not contain option named %s, which is required by animint2pages", opt))
     }
   }
-  # Check for required packages
+  ## Check for required packages
   for(pkg in c("gert", "gh")){
     if (!requireNamespace(pkg)) {
       stop(sprintf("Please run `install.packages('%s')` before using this function", pkg))
     }
   }
-  # Generate plot files
-  res <- animint2dir(plot.list, open.browser = FALSE, ...)
-  # Select non-ignored files to post
+  
+  if(requireNamespace("chromote") && requireNamespace("magick")) {
+    chrome.session <- chromote::ChromoteSession$new()
+    res <- animint2dir(plot.list, open.browser = FALSE, ...)
+    #Find available port and start server
+    portNum <- servr::random_port()
+    normDir <- normalizePath(res$out.dir, winslash = "/", mustWork = TRUE)
+    start_servr(serverDirectory = normDir, port = portNum, tmpPath = normDir)
+    Sys.sleep(3)
+    url <- sprintf("http://localhost:%d", portNum)
+    chrome.session$Page$navigate(url)
+    screenshot_path <- file.path(res$out.dir, "Capture.PNG")
+    screenshot_full <- file.path(res$out.dir, "Capture_full.PNG")
+    Sys.sleep(3)
+    ## Capture screenshot
+    chrome.session$screenshot(screenshot_full, selector = ".plot_content")
+    image_raw <- magick::image_read(screenshot_full)
+    image_trimmed <- magick::image_trim(image_raw)
+    magick::image_write(image_trimmed, screenshot_path)
+    unlink(screenshot_full)
+    chrome.session$close()
+    # Stop the server
+    stop_servr(normDir)
+  }
   all_files <- Sys.glob(file.path(res$out.dir, "*"))
   file_info <- file.info(all_files)
   to_post <- all_files[!(file_info$size == 0 | grepl("~$", all_files))]
@@ -61,8 +83,10 @@ animint2pages <- function(plot.list, github_repo, commit_message = "Commit from 
     stop("The github_repo argument should not contain '/'.")
   }
   # Check for existing repository
-  whoami <- suppressMessages(gh::gh_whoami())
-  owner <- whoami[["login"]]
+  if(is.null(owner)){
+    whoami <- suppressMessages(gh::gh_whoami())
+    owner <- whoami[["login"]]
+  }
   viz_owner_repo <- paste0(owner, "/", github_repo)
   local_clone <- tempfile()
   if (!check_no_github_repo(owner, github_repo)) {
@@ -75,7 +99,7 @@ animint2pages <- function(plot.list, github_repo, commit_message = "Commit from 
     repo <- gert::git_clone(origin_url, local_clone)
   }
   viz_url <- paste0("https://", owner, ".github.io/", github_repo)
-  # check if repo has commit, if not, give it first commit, this can avoid error
+  ## check if repo has commit, if not, give it first commit, this can avoid error
   has_commits <- FALSE
   try(
     {
@@ -86,18 +110,20 @@ animint2pages <- function(plot.list, github_repo, commit_message = "Commit from 
     silent = TRUE
   )
   if (!has_commits) {
-    initial_commit(local_clone, repo, viz_url)
+    title <- plot.list[["title"]]
+    if(!is.character(title))title <- "New animint visualization"
+    initial_commit(local_clone, repo, viz_url, title)
   }
-  # Handle gh-pages branch
+  ## Handle gh-pages branch
   manage_gh_pages(repo, to_post, local_clone, commit_message)
   message(sprintf(
     "Visualization will be available at %s\nDeployment via GitHub Pages may take a few minutes...", viz_url))
-  viz_owner_repo
+  list(owner_repo=viz_owner_repo, local_clone=local_clone, viz_url=viz_url, gh_pages_url=sprintf("https://github.com/%s/tree/gh-pages", viz_owner_repo))
 }
 
-initial_commit <- function(local_clone, repo, viz_url) {
+initial_commit <- function(local_clone, repo, viz_url, title) {
   readme_file_path <- file.path(local_clone, "README.md")
-  header <- "## New animint visualization\n"
+  header <- sprintf("## %s\n", title)
   url_hyperlink <- sprintf("[%s](%s)\n", viz_url, viz_url)
   full_content <- paste0(header, url_hyperlink)
   writeLines(full_content, readme_file_path)
