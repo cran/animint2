@@ -1,3 +1,19 @@
+# Changes in version 2025.1.21 (PR#181)
+
+- `animint(video="https://some.url")` renders the link at the bottom
+  of the data viz.
+- `update_gallery()` uses `download.file()` instead of git clone (faster).
+
+# Changes in version 2024.11.27 (PR#170)
+
+- When scale_log10 changes -Inf to NA, Inf handling logic now works
+  (previous was error, user should still fix their code to change -Inf
+  to 0).
+
+# Changes in version 2024.11.11 (PR#166)
+
+- if(require(maps)) in test-compiler-animation.R.
+
 # Changes in version 2024.11.2 (PR#163)
 
 - Added [gtable] to \link{gtable} to fix new CRAN issue (\link{} targets missing package anchors).
