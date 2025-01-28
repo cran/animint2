@@ -1,6 +1,6 @@
 Package: animint2
 Title: Animated Interactive Grammar of Graphics
-Version: 2025.1.21
+Version: 2025.1.28
 URL: https://animint.github.io/animint2/
 BugReports: https://github.com/animint/animint2/issues
 Authors@R: c(
@@ -131,7 +131,7 @@ Collate: 'gganimintproto.r' 'aaa-.r' 'aes-calculated.r'
 RoxygenNote: 7.3.2
 Config/Needs/website: tidyverse/tidytemplate
 NeedsCompilation: no
-Packaged: 2025-01-21 12:09:44 UTC; tdhock
+Packaged: 2025-01-28 15:34:48 UTC; tdhock
 Author: Toby Hocking [aut, cre] (Original animint code),
   Biplab Sutradhar [ctb] (Updated animist.js to use class for source
     links),
@@ -153,4 +153,4 @@ Author: Toby Hocking [aut, cre] (Original animint code),
   Siddhesh Deodhar [aut] (Animint2 GSoC 2024)
 Maintainer: Toby Hocking <toby.hocking@r-project.org>
 Repository: CRAN
-Date/Publication: 2025-01-21 13:50:02 UTC
+Date/Publication: 2025-01-28 16:00:05 UTC

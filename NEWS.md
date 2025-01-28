@@ -1,3 +1,28 @@
+# Changes in version 2025.1.28
+
+## PR#185
+
+- Tour highlights the geom in the correct plot (instead of always the first viz on the page).
+
+## PR#186
+
+- `geom_abline()`: fix and vectorize `pre_process()` method.
+
+## PR#184
+
+- Add simple Hello world example to ?animint.
+- Increase text size of "a" in legend SVG.
+
+# Changes in version 2025.1.25 (PR#182)
+
+- Tour text includes selector names for geoms with named clickSelects/showSelected.
+- `animint2pages(chromote_sleep_seconds=NULL)` is the new default (no screenshot).
+- knit_print.animint supports Start Tour button.
+
+# Changes in version 2025.1.24 (PR#164)
+
+- New Start Tour widget at the bottom of each data viz, which highlights what interactions are possible with each geom. Use `geom_*(title="title for geom in tour", help="details about what this geom is supposed to represent)` to change what is displayed for each geom during the tour. Powered by https://driverjs.com/
+
 # Changes in version 2025.1.21 (PR#181)
 
 - `animint(video="https://some.url")` renders the link at the bottom

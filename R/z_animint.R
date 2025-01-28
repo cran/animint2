@@ -68,7 +68,7 @@ parsePlot <- function(meta, plot, plot.name){
     ## -> handles .value/.variable named params
     ## -> removes duplicates
     ## -> removes duplicates due to showSelected legend
-    L$extra_params <- checkExtraParams(L$extra_params, L$mapping)
+    L$extra_params <- checkExtraParams(L$extra_params, L$mapping, L$data)
 
     ## Add the showSelected/clickSelects params to the aesthetics
     ## mapping before calling ggplot_build
@@ -817,7 +817,6 @@ getLegendList <- function(plistextra){
       gdefs[[legend.name]]$breaks <- sc$breaks
     }
   }
-
   legend.list <- lapply(gdefs, getLegend)
   ## Add a flag to specify whether or not there is both a color and a
   ## fill legend to display. If so, we need to draw the interior of
