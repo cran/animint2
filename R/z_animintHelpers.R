@@ -131,20 +131,29 @@ getUniqueAxisLabels <- function(plot.meta){
   return(plot.meta)
 }
 
-
-getWidthAndHeight <- function(theme){
+getThemeOptions <- function(theme, ...) {
+  defaults <- list(...)
+  keys <- names(defaults)
   options_list <- list()
-  for(wh in c("width", "height")){
-    awh <- paste0("animint.", wh)
-    options_list[[wh]] <- if(awh %in% names(theme)){
-      theme[[awh]]
-    }else{
-      400
+  for (i in seq_along(keys)) {
+    key <- keys[i]
+    attr_name <- paste0("animint.", key)
+    options_list[[key]] <- if (attr_name %in% names(theme)) {
+      theme[[attr_name]]
+    } else {
+      defaults[[i]]
     }
   }
   options_list
 }
 
+getWidthAndHeight <- function(theme) {
+  getThemeOptions(theme, width=400, height=400)
+}
+
+get_span <- function(theme) {
+  getThemeOptions(theme, rowspan=NA, colspan=NA, last_in_row=NA)
+}
 
 setUpdateAxes <- function(theme, options_list){
   update_axes <- "animint.update_axes"
@@ -173,6 +182,20 @@ hjust2anchor <- function(hjust){
   }
 }
 
+#' @param params Named list of layer parameters
+#' @return NULL if valid, stops with error if invalid showSelected variant found
+error_for_showSelected_variants <- function(params) {
+  if (is.null(names(params))) return(NULL)
+  # Match any parameter that starts with "showSelected" but is not exactly "showSelected"
+  invalid_showSelected <- grep("^showSelected.+", names(params), value = TRUE)
+  if (length(invalid_showSelected) > 0) {
+    stop(sprintf("Invalid parameter(s): %s. Please use geom(showSelected = character_vector_of_variable_names)",
+        paste(invalid_showSelected, collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+}
 
 #' Get all parameters for a layer
 #'
@@ -180,6 +203,7 @@ hjust2anchor <- function(hjust){
 #' @return All parameters in the layer
 getLayerParams <- function(l){
   params <- c(l$geom_params, l$stat_params, l$aes_params, l$extra_params)
+  error_for_showSelected_variants(params)
   if("chunk_vars" %in% names(params) && is.null(params[["chunk_vars"]])){
     params[["chunk_vars"]] <- character()
   }
@@ -965,7 +989,9 @@ saveChunks <- function(x, meta){
   if(is.data.frame(x)){
     this.i <- meta$chunk.i
     csv.name <- sprintf("%s_chunk%d.tsv", meta$g$classed, this.i)
-    data.table::fwrite(x, file.path(meta$out.dir, csv.name), quote=FALSE,
+    # Ensure fields are quoted so that embedded newlines or tabs in
+    # string fields do not break the TSV format when read by d3.tsv.
+    data.table::fwrite(x, file.path(meta$out.dir, csv.name),
                 row.names=FALSE, sep="\t")
     meta$chunk.i <- meta$chunk.i + 1L
     this.i

@@ -3,57 +3,46 @@ acontext("tooltip-interactivity")
 data("CO2")
 
 plot_viz <- ggplot() + 
-  geom_point(aes(conc, uptake, color=Treatment, tooltip=Plant),
-             data = CO2)
+  geom_point(aes(conc, uptake, color=Treatment, tooltip=Plant , id = paste0(Plant, "_", seq_len(nrow(CO2)))), # Unique ID for every circle
+             data = CO2)+
+  geom_rect(aes(xmin=100, xmax=200, ymin=20, ymax=30, 
+              tooltip="Test Rectangle"), alpha=0.5)
 viz <- list(p=plot_viz)
 info <- animint2HTML(viz)
 
-# Hide titles with Treatment = "nonchilled" 
-clickID(c("plot_p_Treatment_variable_nonchilled"))
-Sys.sleep(0.5)
-info$html_updated1 <- getHTML()
+tooltip.xpath <- '//div[@class="animint-tooltip"]'
+test_that(".animint-tooltip exists and is hidden initially", {
+  # Initial state - tooltip should be hidden
+  opacity <- getStyleValue(info$html, tooltip.xpath, "opacity")
+  expect_identical(opacity, "0")
+})
+test_that("tooltip shows correct content on hover interaction", {
+  mouseMoved('g[class*=\"geom2_rect\"] rect')
+  opacity <- getStyleValue(getHTML(), tooltip.xpath, "opacity")
+  expect_gt(as.numeric(opacity), 0)
+  tooltip_div <- getNodeSet(getHTML(), tooltip.xpath)[[1]]
+  expect_equal(xmlValue(tooltip_div), "Test Rectangle")
+  mouseMoved()
+})
 
-# Hide all titles
-clickID(c("plot_p_Treatment_variable_chilled"))
-Sys.sleep(0.5)
-info$html_updated2 <- getHTML()
+test_that("Interactivity does not mess up tooltips", {
+  # Hide all nonchilled points
+  clickID("plot_p_Treatment_variable_nonchilled")
+  Sys.sleep(0.5)
+  mouseMoved('circle#Qc1_22')
+  tooltip_div <- getNodeSet(getHTML(), tooltip.xpath)[[1]]
+  tooltip_text <- xmlValue(tooltip_div)
+  expect_match(tooltip_text, "Qc1", info = "Expected tooltip for chilled point Qc1")
+  clickID("plot_p_Treatment_variable_nonchilled")
+  Sys.sleep(0.2)
+  mouseMoved('circle#Mn3_60')
+  tooltip_div <- getNodeSet(getHTML(), tooltip.xpath)[[1]]
+  tooltip_text <- xmlValue(tooltip_div)
+  expect_match(tooltip_text, "Mn3", info = "Expected tooltip for nonchilled point Qn1")
+  mouseMoved()
+})
 
-# Show titles with Treatment = "nonchilled"
-clickID(c("plot_p_Treatment_variable_nonchilled"))
-Sys.sleep(0.5)
-info$html_updated3 <- getHTML()
-
-
-test_that("Interactivity does not mess up tooltip titles", {
-  # Initially all titles are rendered
-  title_nodes1 <-
-    getNodeSet(info$html, '//g[@class="geom1_point_p"]//circle//title')
-  rendered_titles1 <- sapply(title_nodes1, xmlValue)
-  
-  expect_equal(length(rendered_titles1), length(CO2$Plant))
-  expect_identical(sort(unique(rendered_titles1)), 
-                   sort(sapply(unique(CO2$Plant), as.character)))
-  
-  title_nodes2 <-
-    getNodeSet(info$html_updated1, '//g[@class="geom1_point_p"]//circle//title')
-  rendered_titles2 <- sapply(title_nodes2, xmlValue)
-  rendered_titles2_unique <- unique(rendered_titles2)
-  actual_titles2 <- c("Qc1", "Qc2", "Qc3", "Mc1", "Mc2", "Mc3")
-  
-  expect_equal(length(rendered_titles2), sum(CO2$Treatment == "chilled"))
-  expect_identical(sort(rendered_titles2_unique), sort(actual_titles2))
-  
-  title_nodes3 <-
-    getNodeSet(info$html_updated2, '//g[@class="geom1_point_p"]//circle//title')
-  
-  expect_equal(length(title_nodes3), 0)
-  
-  title_nodes4 <-
-    getNodeSet(info$html_updated3, '//g[@class="geom1_point_p"]//circle//title')
-  rendered_titles4 <- sapply(title_nodes4, xmlValue)
-  rendered_titles4_unique <- unique(rendered_titles4)
-  actual_titles4 <- c("Qn1", "Qn2", "Qn3", "Mn1", "Mn2", "Mn3")
-  
-  expect_equal(length(rendered_titles4), sum(CO2$Treatment == "nonchilled"))
-  expect_identical(sort(rendered_titles4_unique), sort(actual_titles4))
+test_that("tooltip is hidden after mouseout", {
+  opacity <- getStyleValue(getHTML(), tooltip.xpath, "opacity")
+  expect_identical(opacity, "0")
 })

@@ -17,6 +17,8 @@
 #'   which are checked (stop with an error if not present). Use
 #'   required_opts=NULL to skip check.
 #' @param chromote_sleep_seconds if numeric, chromote will be used to take a screenshot of the data viz, pausing this number of seconds to wait for rendering (experimental).
+#' @param chromote_width width of chromote window in pixels, default 3000 should be sufficient for most data viz, but can be increased if your data viz screenshot appears cropped too small.
+#' @param chromote_height height of chromote window in pixels, default 2000 should be sufficient for most data viz, but can be increased if your data viz screenshot appears cropped too small.
 #' @param ... Additional options passed onto \code{animint2dir}.
 #'
 #' @return The function returns the initialized GitHub repository object.
@@ -37,7 +39,7 @@
 #' }
 #' 
 #' @export
-animint2pages <- function(plot.list, github_repo, owner=NULL, commit_message = "Commit from animint2pages", private = FALSE, required_opts = c("title","source"), chromote_sleep_seconds=NULL, ...) {
+animint2pages <- function(plot.list, github_repo, owner=NULL, commit_message = "Commit from animint2pages", private = FALSE, required_opts = c("title","source"), chromote_sleep_seconds=NULL, chromote_width=3000, chromote_height=2000, ...) {
   for(opt in required_opts){
     if(!opt %in% names(plot.list)){
       stop(sprintf("plot.list does not contain option named %s, which is required by animint2pages", opt))
@@ -51,7 +53,8 @@ animint2pages <- function(plot.list, github_repo, owner=NULL, commit_message = "
   }
   res <- animint2dir(plot.list, open.browser = FALSE, ...)
   if(requireNamespace("chromote") && requireNamespace("magick") && is.numeric(chromote_sleep_seconds)) {
-    chrome.session <- chromote::ChromoteSession$new()
+    chrome.session <- chromote::ChromoteSession$new(
+      width=chromote_width, height=chromote_height)
     #Find available port and start server
     portNum <- servr::random_port()
     normDir <- normalizePath(res$out.dir, winslash = "/", mustWork = TRUE)
@@ -138,9 +141,9 @@ initial_commit <- function(local_clone, repo, viz_url, title) {
     all_branches <- df_or_vec
     current_master <- df_or_vec
   }
-  # do not attempt to rename a branch to "main" when a branch with that name already exists
-  if (current_master != "main" && !"main" %in% all_branches) {
-    gert::git_branch_move(branch = current_master, new_branch = "main", repo = repo)
+  # do not attempt to rename a branch to "gh-pages" when a branch with that name already exists
+  if (current_master != "gh-pages" && !"gh-pages" %in% all_branches) {
+    gert::git_branch_move(branch = current_master, new_branch = "gh-pages", repo = repo)
   }
   gert::git_push(repo = repo, remote = "origin", set_upstream = TRUE)
 }
@@ -190,15 +193,23 @@ update_gallery <- function(gallery_path="~/R/gallery"){
   commit.POSIXct <- title <- NULL
   ## Above to avoid CRAN NOTE.
   repos.txt <- file.path(gallery_path, "repos.txt")
-  repos.dt <- fread(repos.txt,header=FALSE,col.names="viz_owner_repo")
+  repos.dt <- fread(
+    repos.txt, header=FALSE, col.names="viz_owner_repo"
+  )[viz_owner_repo != ""]
   meta.csv <- file.path(gallery_path, "meta.csv")
-  if(file.exists(meta.csv)){
-    old.meta <- fread(meta.csv)
-    todo.meta <- repos.dt[!old.meta, on="viz_owner_repo"]
-  }else{
-    old.meta <- NULL
-    todo.meta <- repos.dt
+  get_png <- function(owner_repo){
+    file.path(gallery_path, "repos", paste0(owner_repo, ".png"))
   }
+  repo.png.vec <- get_png(repos.dt$viz_owner_repo)
+  old.meta <- if(file.exists(meta.csv)){
+    fread(meta.csv)
+  }else{
+    data.table(viz_owner_repo=character())
+  }
+  missing.meta <- !repos.dt$viz_owner_repo %in% old.meta$viz_owner_repo
+  missing.png <- !file.exists(repo.png.vec)
+  todo.meta <- repos.dt[missing.png | missing.meta]
+  old.keep <- old.meta[repos.dt, on="viz_owner_repo", nomatch=0L]
   meta.dt.list <- list(old.meta)
   error.dt.list <- list()
   add.POSIXct <- Sys.time()
@@ -207,10 +218,17 @@ update_gallery <- function(gallery_path="~/R/gallery"){
       viz_url <- function(filename)sprintf(
         "https://raw.githubusercontent.com/%s/refs/heads/gh-pages/%s",
         viz_owner_repo, filename)
-      repo.png <- file.path(
-        gallery_path, "repos", paste0(viz_owner_repo, ".png"))
+      repo.png <- get_png(viz_owner_repo)
+      repo.dir <- dirname(repo.png)
+      dir.create(repo.dir, showWarnings = FALSE)
       if(!file.exists(repo.png)){
-        download.file(viz_url("Capture.PNG"), repo.png)
+        dir.create(dirname(repo.png), showWarnings=FALSE, recursive=TRUE)
+        download.file(viz_url("Capture.PNG"), repo.png, method="curl")
+        png_first_line <- suppressWarnings(readLines(repo.png, n=1))
+        if(identical(png_first_line, "404: Not Found")){
+          unlink(repo.png)
+          stop("Capture.PNG download returned 404: Not Found")
+        }
       }
       local.json <- tempfile()
       download.file(viz_url("plot.json"), local.json)
@@ -245,9 +263,15 @@ update_gallery <- function(gallery_path="~/R/gallery"){
     })
   }
   (meta.dt <- rbindlist(meta.dt.list))
-  (error.dt <- rbindlist(error.dt.list))
   fwrite(meta.dt, meta.csv)
-  fwrite(error.dt, file.path(gallery_path, "error.csv"))
+  error.csv <- file.path(gallery_path, "error.csv")
+  if(length(error.dt.list)){
+    (error.dt <- rbindlist(error.dt.list))
+    fwrite(error.dt, error.csv)
+  }else{
+    error.dt <- NULL
+    if(file.exists(error.csv))file.remove(error.csv)
+  }
   rmarkdown::render(file.path(gallery_path, "index.Rmd"))
   to_add <- c(
     "*.csv",
