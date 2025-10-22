@@ -158,7 +158,7 @@ Geom <- gganimintproto("Geom",
   ## AnimationInfo- animation list
   ## ID- number starting from 1
   ## returns- list representing a layer, with corresponding aesthetics, ranges, and groups.
-  export_animint = function(l, d, meta, layer_name, ggplot, built, AnimationInfo) {
+  export_animint = function(l, g.data, meta, layer_name, ggplot, built, AnimationInfo) {
     xminv <- y <- xmaxv <- chunks.for <- NULL
     ## above to avoid NOTE on CRAN check.
     g <- list(geom=strsplit(layer_name, "_")[[1]][2])
@@ -218,13 +218,6 @@ Geom <- gganimintproto("Geom",
     ## Separate .variable/.value selectors
     s.aes <- selectSSandCS(g$aes)
     meta$selector.aes[[g$classed]] <- s.aes
-
-    ## Do not copy group unless it is specified in aes, and do not copy
-    ## showSelected variables which are specified multiple times.
-    do.not.copy <- colsNotToCopy(g, s.aes)
-    copy.cols <- ! names(d) %in% do.not.copy
-
-    g.data <- d[copy.cols]
 
     is.ss <- names(g$aes) %in% s.aes$showSelected$one
     show.vars <- g$aes[is.ss]
@@ -579,28 +572,17 @@ Geom <- gganimintproto("Geom",
     if("group" %in% names(g$aes) && g$geom %in% data.object.geoms){
       g$nest_order <- c(g$nest_order, "group")
     }
-
-    ## Some geoms should be split into separate groups if there are NAs.
-    if(any(is.na(g.data)) && "group" %in% names(g$aes)){
-      sp.cols <- unlist(c(chunk.cols, g$nest_order))
-      order.args <- list()
-      for(sp.col in sp.cols){
-        order.args[[sp.col]] <- g.data[[sp.col]]
-      }
-      ord <- do.call(order, order.args)
-      g.data <- g.data[ord,]
-      is.missing <- apply(is.na(g.data), 1, any)
-      diff.vec <- diff(is.missing)
-      new.group.vec <- c(FALSE, diff.vec == 1)
-      for(chunk.col in sp.cols){
-        one.col <- g.data[[chunk.col]]
-        is.diff <- c(FALSE, one.col[-1] != one.col[-length(one.col)])
-        new.group.vec[is.diff] <- TRUE
-      }
-      subgroup.vec <- cumsum(new.group.vec)
-      g.data$group <- subgroup.vec
+    ## If user did not specify aes(group), then use group=1.
+    if(! "group" %in% names(g$aes)){
+      g.data$group <- 1
     }
-
+    ## Some geoms should be split into separate groups if there are NAs.
+    setDT(g.data)
+    g.data[, let(
+      row_in_group = 1:.N,
+      na_group = cumsum(apply(is.na(.SD), 1, any))
+    ), by=c("group",chunk.cols)]
+    setDF(g.data)
     ## Find infinite values and replace with range min/max.
     for(xy in c("x", "y")){
       range.name <- paste0(xy, ".range")
@@ -633,16 +615,17 @@ Geom <- gganimintproto("Geom",
     ## separately to reduce disk usage.
     data.or.null <- getCommonChunk(g.data, chunk.cols, g$aes)
     g.data.varied <- if(is.null(data.or.null)){
+      if(length(unique(g.data$group))==1)g.data$group <- NULL
       split_recursive(na.omit(g.data), chunk.cols)
     }else{
       g$columns$common <- as.list(names(data.or.null$common))
       tsv.name <- sprintf("%s_chunk_common.tsv", g$classed)
       tsv.path <- file.path(meta$out.dir, tsv.name)
-      data.table::fwrite(data.or.null$common,file= tsv.path,
-                  row.names = FALSE,sep = "\t")
+      data.table::fwrite(
+        data.or.null$common, file = tsv.path,
+        row.names = FALSE, sep = "\t")
       data.or.null$varied
     }
-
     list(g=g, g.data.varied=g.data.varied, timeValues=AnimationInfo$timeValues)
   }
 )

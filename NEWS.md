@@ -1,3 +1,33 @@
+# Changes in version 2025.10.17 (PR#255)
+
+- `getCommonChunk()` uses default group=1 (previously 1:N which was slower).
+- `getCommonChunk()` works for `geom_point()` and other geoms which do not use `aes(group)` for display (previously common data was only returned for geoms path/polygon/ribbon).
+- `getCommonChunk()` returns common data if there is only one common variable, as long as it has at least one group with more than one row (previously at least two common variables were required).
+
+# Changes in version 2025.10.10 (PR#251)
+
+-  `animint2dir()` no longer has `css.file` argument which was never tested. Style customizations should be done using `theme()`.
+
+# Changes in version 2025.10.9 (PR#242)
+
+- Improve common chunk detection, output `na_group` and `row_in_group` when there are missing values.
+
+# Changes in version 2025.10.3 (PR#240)
+
+- `guide_legend(override.aes)` works in a plot with both color and fill legends.
+
+# Changes in version 2025.9.30 (PR#239)
+
+- `getCommonChunk()` has new atime performance test.
+
+# Changes in version 2025.9.27 (PR#238)
+
+- Remove `checkCommon()` internal function, which was too slow for computing common chunk tsv file, when there were a large number of groups. Now using data table by group, which is faster and prints progress.
+
+# Changes in version 2025.9.26 (PR#236)
+
+- `animint2pages()` arguments `chromote_*` move to `animint2dir()` so that we can create `Capture.PNG` in the context of `knit_print.animint()`, for pdf output.
+
 # Changes in version 2025.9.16
 
 - `animint2pages()` gains arguments `chromote_width` and `chromote_height`, both dimensions in pixels of browser window used to create `Capture.PNG`, new defaults 3000x2000 should be large enough to handle most typical data viz (previous default width was not on Ubuntu).

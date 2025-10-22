@@ -1,6 +1,6 @@
 Package: animint2
 Title: Animated Interactive Grammar of Graphics
-Version: 2025.9.16
+Version: 2025.10.17
 URL: https://animint.github.io/animint2/
 BugReports: https://github.com/animint/animint2/issues
 Authors@R: c(
@@ -61,7 +61,10 @@ Authors@R: c(
      comment="Animint2 GSoC 2024"),
     person("Suhaani", "Agarwal",
      role="aut",
-     comment="Animint2 GSoC 2025"))
+     comment="Animint2 GSoC 2025"),
+    person("Gaurav", "Chaudhary",
+     role="ctb",
+     comment="Remove unused css.file parameter"))
 Description: Functions are provided for defining animated,
  interactive data visualizations in R code, and rendering
  on a web page. The 2018 Journal of Computational and 
@@ -134,7 +137,7 @@ Collate: 'gganimintproto.r' 'aaa-.r' 'aes-calculated.r'
 RoxygenNote: 7.3.3
 Config/Needs/website: tidyverse/tidytemplate
 NeedsCompilation: no
-Packaged: 2025-09-22 19:16:53 UTC; hoct2726
+Packaged: 2025-10-22 15:50:20 UTC; hoct2726
 Author: Toby Hocking [aut, cre] (Original animint code),
   Biplab Sutradhar [ctb] (Updated animist.js to use class for source
     links),
@@ -154,7 +157,8 @@ Author: Toby Hocking [aut, cre] (Original animint code),
   Yufan Fei [aut] (Animint2 GSoC 2022),
   Jocelyne Chen [aut] (Animint2 GSoC 2023),
   Siddhesh Deodhar [aut] (Animint2 GSoC 2024),
-  Suhaani Agarwal [aut] (Animint2 GSoC 2025)
+  Suhaani Agarwal [aut] (Animint2 GSoC 2025),
+  Gaurav Chaudhary [ctb] (Remove unused css.file parameter)
 Maintainer: Toby Hocking <toby.hocking@r-project.org>
 Repository: CRAN
-Date/Publication: 2025-09-22 20:10:02 UTC
+Date/Publication: 2025-10-22 17:20:02 UTC
